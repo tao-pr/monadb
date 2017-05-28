@@ -6,22 +6,54 @@
 var Promise = require('bluebird');
 var colors  = require('colors');
 
-class Connection {
+class DBInterface {
   constructor(svr, dbname, collection){
     this.svr = svr;
     this.dbname = dbname;
     this.collection = collection;
   }
-}
 
-class Cursor {
-  static with(db){
-    assert.deepEqual(db.constructor.name, 'DB', '[Cursor] needs to be initialised with a [DB].');
-    this.db = db;
+  find(cond){
+    console.log('[find] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  insert(rec){
+    console.log('[insert] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  update(cond, updater){
+    console.log('[update] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  delete(cond){
+    console.log('[delete] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  drop(){
+    console.log('[drop] is not implemented.'.yellow);
+    return Promise.resolve(this);
   }
 }
 
+class Cursor {
+  constructor(db){
+    assert.deepEqual(db.constructor.name, 'DBInterface', '[Cursor] needs to be initialised with a [DBInterface].');
+  }
+
+  static with(db){
+    var cursor = new Cursor(db);
+    return cursor;
+  }
+
+  static where()
+
+}
+
 module.exports = {
-  'Connection': Connection,
+  'DBInterface': DBInterface,
   'Cursor': Cursor
 }
