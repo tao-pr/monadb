@@ -39,21 +39,5 @@ class DBInterface {
   }
 }
 
-class Cursor {
-  constructor(db){
-    assert.deepEqual(db.constructor.name, 'DBInterface', '[Cursor] needs to be initialised with a [DBInterface].');
-  }
 
-  static with(db){
-    var cursor = new Cursor(db);
-    return cursor;
-  }
-
-  static where()
-
-}
-
-module.exports = {
-  'DBInterface': DBInterface,
-  'Cursor': Cursor
-}
+module.exports = DBInterface;
