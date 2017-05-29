@@ -14,11 +14,17 @@ describe('Database Operations', function(){
   var vector = null;
 
   beforeAll(function(done){
+    console.log('Initialising')
     vector = Vector.with(_db);
     done();
   })
 
   it('should initialise a new database vector', function(done){
     expect(vector.constructor.name).toEqual('Vector');
+    done();
+  })
+
+  afterAll(function(){
+    console.log('All done');
   })
 })
