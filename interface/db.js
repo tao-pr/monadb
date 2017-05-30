@@ -6,11 +6,15 @@
 var Promise = require('bluebird');
 var colors  = require('colors');
 
+/**
+ * All of methods of [[DBInterface]] must always return a [[Promise]]
+ */
 class DBInterface {
-  constructor(svr, dbname, collection){
+  constructor(svr, dbname, collection, verbose){
     this.svr = svr;
     this.dbname = dbname;
     this.collection = collection;
+    this.verbose = verbose || false;
   }
 
   find(cond){
@@ -28,6 +32,11 @@ class DBInterface {
     return Promise.resolve(this);
   }
 
+  count(cond){
+    console.log('[count] is not implemented'.yellow);
+    return Promise.resolve(this);
+  }
+
   delete(cond){
     console.log('[delete] is not implemented.'.yellow);
     return Promise.resolve(this);
@@ -35,6 +44,11 @@ class DBInterface {
 
   drop(){
     console.log('[drop] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  forEach(f){
+    console.log('[forEach] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 }
