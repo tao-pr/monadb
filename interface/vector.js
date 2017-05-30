@@ -8,10 +8,15 @@ var DB      = require('./db');
 var colors  = require('colors');
 var Promise = require('bluebird');
 
+/**
+ * Monadic container of a database operation
+ */
 class Vector {
   constructor(db){
     // TAOTODO: [db] must be [DBInterface] or inheritence of it
     assert.deepEqual(db.constructor.name, 'DBInterface', '[Cursor] needs to be initialised with a [DBInterface].');
+    this.filterCondition = {};
+    this.operation = Promise.resolve(db);
   }
 
   /**
@@ -22,14 +27,29 @@ class Vector {
   }
 
   where(condition){
-    return function(v){}
+    var self = this;
+    self.filterCondition = condition;
+    return self;
+  }
+
+  insert(record){
+    var self = this;
+    self.operation = self.operation.then((db) => db.insert(record))
+    return self;
   }
 
   set(valueUpdates){
-    return function(v){}
+    var self = this;
+    self.operation = self.operation.then((db) => 
+      db.update(self.filterCondition, valueUpdates))
+    return self;
   }
 
-  save(){}
+  count(){
+    var self = this;
+    self.operation = self.operation.then((db) => db.count(self.filterCondition))
+    return self;
+  }
 }
 
 module.exports = Vector;
