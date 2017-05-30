@@ -16,6 +16,7 @@ describe('Database Operations', function(){
   beforeAll(function(done){
     console.log('Initialising')
     vector = Vector.with(_db);
+    // TAOTODO: Ensure all records are deleted beforehand
     done();
   })
 
@@ -24,7 +25,18 @@ describe('Database Operations', function(){
     done();
   })
 
+  it('should add a new record', function(done){
+    vector.insert({a: 100, b: [250]})
+          .count()
+          .do()
+          .then((c) => {
+            expect(c).toEqual(1);
+            done();
+          })
+  })
+
   afterAll(function(){
     console.log('All done');
+    // TAOTODO: Delete all records
   })
 })
