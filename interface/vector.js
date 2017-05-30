@@ -50,6 +50,16 @@ class Vector {
     self.operation = self.operation.then((db) => db.count(self.filterCondition))
     return self;
   }
+
+  forEach(f){
+    var self = this;
+    self.operation = self.operation.then((db) => db.forEach(f))
+    return self;
+  }
+
+  do(){
+    return self.operation;
+  }
 }
 
 module.exports = Vector;
