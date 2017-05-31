@@ -58,6 +58,7 @@ class Vector {
   }
 
   do(){
+    var self = this;
     return self.operation;
   }
 }
