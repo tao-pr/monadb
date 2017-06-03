@@ -87,7 +87,15 @@ describe('Database Operations', function(){
       .then(() => done())
   })
 
-  it('should update a record')
+  it('should update a record', function(done){
+    V$.with(_db)
+      .set({a: 300}, {'$set': {b: [1,2,3]}})
+      .count({b: [1,2,3]})
+      .pluck((c) => {
+        expect(c).toEqual(3);
+        done();
+      })
+  })
 
   it('should delete a record based on condition')
 

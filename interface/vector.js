@@ -58,10 +58,10 @@ class Vector {
     return self;
   }
 
-  set(valueUpdates){
+  set(cond,valueUpdates){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.update(clone(self.filterCondition), valueUpdates))
+      self.db.update(cond, valueUpdates))
     return self;
   }
 
