@@ -44,7 +44,17 @@ class Vector {
 
   insert(record){
     var self = this;
-    self.operation = self.operation.then(() => self.db.insert(record))
+    self.operation = self.operation
+      .then(() => self.db.insert(record))
+      .then((res) => res.insertedIds[0])
+    return self;
+  }
+
+  insertMany(records){
+    var self = this;
+    self.operation = self.operation
+      .then(() => Promise.all(records.map(r => self.db.insert(r))))
+      .then((ns) => ns.map((n) => n.insertedIds[0]))
     return self;
   }
 

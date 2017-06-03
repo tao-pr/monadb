@@ -35,7 +35,7 @@ describe('Database Operations', function(){
       })
   })
 
-  it('should query an existing record', function(done){
+  it('should query for an existing record', function(done){
     Vector.with(_db)
       .where({b: [250]})
       .count()
@@ -48,6 +48,23 @@ describe('Database Operations', function(){
         expect(recs[0].a).toEqual(100);
         expect(recs[0].b).toEqual([250]);
         expect(recs[0]._id).not.toEqual(undefined);
+        done();
+      })
+  })
+
+  it('should add a bulk of records', function(done){
+    var records = [
+      {a: 200, b:[1,2,3]},
+      {a: 300, b:[]},
+      {a: 400, b:[1,2,3]},
+      {a: 500, b:{foo: 'bar'}}
+    ];
+    Vector.with(_db)
+      .insertMany(records)
+      .whereAll()
+      .count()
+      .pluck((n) => {
+        expect(n).toEqual(records.length+1);
         done();
       })
   })
