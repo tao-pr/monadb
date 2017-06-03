@@ -14,7 +14,13 @@ var Promise = require('bluebird');
 class Vector {
   constructor(db){
     // TAOTODO: [db] must be [DBInterface] or inheritence of it
-    assert.deepEqual(db.constructor.name, 'DBInterface', '[Cursor] needs to be initialised with a [DBInterface].');
+    
+    var supportedPrototypes = ['MongoDB'];
+
+    assert.deepEqual(
+      supportedPrototypes.indexOf(db.constructor.name)>=0, 
+      true, 
+      '[Cursor] needs to be initialised with a [DBInterface].');
     this.filterCondition = {};
     this.operation = Promise.resolve(db);
   }
@@ -51,6 +57,12 @@ class Vector {
     return self;
   }
 
+  delete(){
+    var self = this;
+    self.operation = self.operation.then((db) => db.delete(self.filterCondition))
+    return self;
+  }
+
   forEach(f){
     var self = this;
     self.operation = self.operation.then((db) => db.forEach(f))
@@ -60,6 +72,12 @@ class Vector {
   do(){
     var self = this;
     return self.operation;
+  }
+
+  pluck(f){
+    var self = this;
+    self.operation = self.operation.then((any) => f(any));
+    return self;
   }
 }
 
