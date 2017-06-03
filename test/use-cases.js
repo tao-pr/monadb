@@ -65,7 +65,6 @@ describe('Database Operations', function(){
       })
       .countAll()
       .pluck((n) => {
-        // TAOTODO: FIX
         expect(n).toEqual(records.length+1);
       })
       .count({a: {'$gte': 400}})
@@ -75,7 +74,18 @@ describe('Database Operations', function(){
       })
   })
 
-  it('should iteratively traverse records')
+  it('should iteratively traverse records', function(done){
+    V$.with(_db)
+      .forEach({b:[1,2,3]}, (r) => {
+        // Even though MongoDB iteration ends will null,
+        // the interface has to prevent from transmitting it.
+        expect(r).not.toBeNull();
+        // Only two elements (200, 400) should reside
+        expect(r.a == 200 || r.a == 400).toBeTruthy();
+        expect(r.a != 200 && r.a != 400).toBeFalsy();
+      })
+      .then(() => done())
+  })
 
   it('should update a record')
 
