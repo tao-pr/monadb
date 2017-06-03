@@ -4,10 +4,10 @@
  */
 
 var jasmine   = require('jasmine');
-var DB        = require('../interface/db');
+var MongoDB   = require('../interface/db-mongo');
 var Vector    = require('../interface/vector');
 
-var _db       = new DB('localhost', 'test_monad', 'one');
+var _db       = new MongoDB('localhost', 'test_monad', 'one');
 
 describe('Database Operations', function(){
   
@@ -15,8 +15,8 @@ describe('Database Operations', function(){
 
   beforeAll(function(done){
     console.log('Initialising')
-    vector = Vector.with(_db);
-    // TAOTODO: Ensure all records are deleted beforehand
+    // Ensure the test database is clean and empty
+    vector = Vector.with(_db).delete();
     done();
   })
 
