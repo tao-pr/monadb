@@ -69,6 +69,13 @@ class Vector {
     return self;
   }
 
+  loadAll(){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.loadAll(self.filterCondition))
+    return self;
+  }
+
   forEach(f){
     var self = this;
     self.operation = self.operation.then(() => 

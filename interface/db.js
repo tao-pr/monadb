@@ -17,18 +17,29 @@ class DBInterface {
     this.verbose = verbose || false;
   }
 
-  find(cond){
+  /**
+   * Exhaustive version of querying
+   */
+  loadAll(cond){
     console.warn('[find] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 
-  insert(rec){
-    console.warn('[insert] is not implemented.'.yellow);
+  /**
+   * Iterative version of querying
+   */
+  forEach(f){
+    console.warn('[forEach] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 
   update(cond, updater){
     console.warn('[update] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  insert(rec){
+    console.warn('[insert] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 
@@ -44,11 +55,6 @@ class DBInterface {
 
   drop(){
     console.warn('[drop] is not implemented.'.yellow);
-    return Promise.resolve(this);
-  }
-
-  forEach(f){
-    console.warn('[forEach] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 
