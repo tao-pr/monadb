@@ -13,10 +13,7 @@ var Promise = require('bluebird');
  */
 class Vector {
   constructor(db){
-    // TAOTODO: [db] must be [DBInterface] or inheritence of it
-    
     var supportedPrototypes = ['MongoDB'];
-
     assert.deepEqual(
       supportedPrototypes.indexOf(db.constructor.name)>=0, 
       true, 
@@ -77,6 +74,12 @@ class Vector {
   pluck(f){
     var self = this;
     self.operation = self.operation.then((any) => f(any));
+    return self;
+  }
+
+  onFailure(f){
+    var self = this;
+    self.operation = self.operation.catch((e) => f(e));
     return self;
   }
 }

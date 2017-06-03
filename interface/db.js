@@ -51,6 +51,7 @@ class DBInterface {
     console.warn('[forEach] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
+
 }
 
 
