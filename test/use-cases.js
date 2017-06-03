@@ -17,7 +17,7 @@ describe('Database Operations', function(){
     console.log('Initialising')
     // Ensure the test database is clean and empty
     vector = Vector.with(_db).delete();
-    done();
+    vector.then(() => done());
   })
 
   it('should initialise a new database vector', function(done){
@@ -26,13 +26,13 @@ describe('Database Operations', function(){
   })
 
   it('should add a new record', function(done){
-    vector.insert({a: 100, b: [250]})
-          .count()
-          .do()
-          .then((c) => {
-            expect(c).toEqual(1);
-            done();
-          })
+    Vector.with(_db)
+      .insert({a: 100, b: [250]})
+      .count()
+      .then((c) => {
+        expect(c).toEqual(1);
+        done();
+      })
   })
 
   afterAll(function(){
