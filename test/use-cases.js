@@ -111,7 +111,15 @@ describe('Database Operations', function(){
       })
   })
 
-  it('should handle exception')
+  it('should handle exception', function(done){
+    V$.with(_db)
+      .delete()
+      .onFailure((e) => {
+        console.log('aaaaaa'.yellow); // TAODEBUG:
+        expect(e).not.toBeNull;
+        done();
+      })
+  })
 
   afterAll(function(){
     console.log('All done');
