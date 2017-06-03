@@ -32,17 +32,14 @@ class Vector {
     return new Vector(db);
   }
 
-  where(condition){
-    // TAOTODO: This function does not work with chained promises
-    var self = this;
-    self.filterCondition = condition;
-    return self;
-  }
-
-  whereAll(){
-    var self = this;
-    self.filterCondition = {};
-    return self;
+  /**
+   * Create a new [DBInterface] 
+   * which runs straight after [v] has done all of its operations.
+   */
+  static after(v){
+    var v_ = Vector(v.db);
+    v_.operation = v.then(() => v_.db);
+    return v_;
   }
 
   insert(record){
@@ -68,31 +65,62 @@ class Vector {
     return self;
   }
 
-  count(){
+  countAll(){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.count(clone(self.filterCondition)))
+      self.db.count({}))
     return self;
   }
 
-  delete(){
+  count(cond){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.delete(clone(self.filterCondition)))
+      self.db.count(cond))
+    return self;
+  }
+
+  delete(cond){
+    var self = this;
+    if (cond)
+      self.operation = self.operation.then(() => 
+        self.db.delete(cond))
+    else
+      console.error('[ERROR] Unable to delete records without given condition'.red);
+    return self;
+  }
+
+  deleteAll(){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.delete({}))
+    return self;
+  }
+
+  load(){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.load(cond))
     return self;
   }
 
   loadAll(){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.loadAll(clone(self.filterCondition)))
+      self.db.load({}))
     return self;
   }
 
-  forEach(f){
+  forEach(cond, f){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.forEach(f))
+      self.db.iterate(cond, f))
+    return self;
+  }
+
+  forEachAll(f){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.iterate({}, f))
     return self;
   }
 
@@ -119,6 +147,19 @@ class Vector {
     var self = this;
     self.operation = self.operation.catch((e) => f(e));
     return self;
+  }
+
+  /**
+   * Execute a function [f] if 
+   * the [filterF] which takes the value of the 
+   * recent output returns truthy value
+   */
+  if(filterF, f){
+    var self = this;
+    self.operation = self.operation.then((v) => {
+      if (filterF(v)) f(v);
+      return v;
+    })
   }
 }
 

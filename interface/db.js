@@ -20,7 +20,7 @@ class DBInterface {
   /**
    * Exhaustive version of querying
    */
-  loadAll(cond){
+  load(cond){
     console.warn('[find] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
@@ -28,8 +28,8 @@ class DBInterface {
   /**
    * Iterative version of querying
    */
-  forEach(f){
-    console.warn('[forEach] is not implemented.'.yellow);
+  iterate(cond, f){
+    console.warn('[iterate] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 
