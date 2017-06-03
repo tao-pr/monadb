@@ -35,8 +35,27 @@ describe('Database Operations', function(){
       })
   })
 
+  it('should query an existing record', function(done){
+    Vector.with(_db)
+      .where({b: [250]})
+      .count()
+      .pluck((n) => {
+        expect(n).toEqual(1);
+      })
+      .loadAll()
+      .pluck((recs) => {
+        expect(recs.length).toEqual(1);
+        expect(recs[0].a).toEqual(100);
+        expect(recs[0].b).toEqual([250]);
+        expect(recs[0]._id).not.toEqual(undefined);
+        done();
+      })
+  })
+
   afterAll(function(){
     console.log('All done');
-    // TAOTODO: Delete all records
+    Vector.with(_db)
+      .delete()
+      .then(() => done())
   })
 })
