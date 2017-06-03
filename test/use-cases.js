@@ -5,7 +5,7 @@
 
 var jasmine   = require('jasmine');
 var MongoDB   = require('../interface/db-mongo');
-var Vector    = require('../interface/vector');
+var V$        = require('../interface/vector');
 
 var _db       = new MongoDB('localhost', 'test_monad', 'one');
 
@@ -16,7 +16,7 @@ describe('Database Operations', function(){
   beforeAll(function(done){
     console.log('Initialising')
     // Ensure the test database is clean and empty
-    vector = Vector.with(_db).delete();
+    vector = V$.with(_db).deleteAll();
     vector.then(() => done());
   })
 
@@ -26,9 +26,9 @@ describe('Database Operations', function(){
   })
 
   it('should add a new record', function(done){
-    Vector.with(_db)
+    V$.with(_db)
       .insert({a: 100, b: [250]})
-      .count()
+      .countAll()
       .then((c) => {
         expect(c).toEqual(1);
         done();
@@ -36,9 +36,8 @@ describe('Database Operations', function(){
   })
 
   it('should query for an existing record', function(done){
-    Vector.with(_db)
-      .where({b: [250]})
-      .count()
+    V$.with(_db)
+      .count({b: [250]})
       .pluck((n) => {
         expect(n).toEqual(1);
       })
@@ -59,29 +58,35 @@ describe('Database Operations', function(){
       {a: 400, b:[1,2,3]},
       {a: 500, b:{foo: 'bar'}}
     ];
-    Vector.with(_db)
+    V$.with(_db)
       .insertMany(records)
       .pluck((ids) => {
         expect(ids.length).toEqual(records.length);
       })
-      .whereAll()
-      .count()
+      .countAll()
       .pluck((n) => {
         // TAOTODO: FIX
         expect(n).toEqual(records.length+1);
       })
-      .where({a: {'$gte': 400}})
-      .count()
+      .count({a: {'$gte': 400}})
       .pluck((n) => {
         expect(n).toEqual(2);
         done();
       })
   })
 
+  it('should iteratively traverse records')
+
+  it('should update a record')
+
+  it('should delete a record based on condition')
+
+  it('should handle exception')
+
   afterAll(function(){
     console.log('All done');
-    Vector.with(_db)
-      .delete()
+    V$.with(_db)
+      .deleteAll()
       .then(() => done())
   })
 })
