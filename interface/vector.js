@@ -10,6 +10,14 @@ var Promise = require('bluebird');
 
 var clone   = (obj) => JSON.parse(JSON.stringify(obj));
 
+class VectorError extends Error {
+  constructor(msg){
+    super(msg);
+    this.msg = msg;
+    this.name = 'VectorError';
+  }
+}
+
 /**
  * Monadic container of a database operation
  */
@@ -84,8 +92,12 @@ class Vector {
     if (cond)
       self.operation = self.operation.then(() => 
         self.db.delete(cond))
-    else
+    else{
       console.error('[ERROR] Unable to delete records without given condition'.red);
+      self.operation = self.operation.then(() => {
+        throw new VectorError('Delete operation requires a condition.')
+      })
+    }
     return self;
   }
 
