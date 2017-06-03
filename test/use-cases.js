@@ -93,11 +93,23 @@ describe('Database Operations', function(){
       .count({b: [1,2,3]})
       .pluck((c) => {
         expect(c).toEqual(3);
+      })
+      .count({b: []})
+      .pluck((c) => {
+        expect(c).toEqual(0);
+        done();
+      });
+  })
+
+  it('should delete a record based on condition', function(done){
+    V$.with(_db)
+      .delete({a: {'$lte': 300}})
+      .countAll()
+      .pluck((c) => {
+        expect(c).toEqual(2);
         done();
       })
   })
-
-  it('should delete a record based on condition')
 
   it('should handle exception')
 
