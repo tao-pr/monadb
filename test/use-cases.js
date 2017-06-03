@@ -61,10 +61,19 @@ describe('Database Operations', function(){
     ];
     Vector.with(_db)
       .insertMany(records)
+      .pluck((ids) => {
+        expect(ids.length).toEqual(records.length);
+      })
       .whereAll()
       .count()
       .pluck((n) => {
+        // TAOTODO: FIX
         expect(n).toEqual(records.length+1);
+      })
+      .where({a: {'$gte': 400}})
+      .count()
+      .pluck((n) => {
+        expect(n).toEqual(2);
         done();
       })
   })

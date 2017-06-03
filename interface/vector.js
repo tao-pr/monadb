@@ -8,6 +8,8 @@ var DB      = require('./db');
 var colors  = require('colors');
 var Promise = require('bluebird');
 
+var clone   = (obj) => JSON.parse(JSON.stringify(obj));
+
 /**
  * Monadic container of a database operation
  */
@@ -31,6 +33,7 @@ class Vector {
   }
 
   where(condition){
+    // TAOTODO: This function does not work with chained promises
     var self = this;
     self.filterCondition = condition;
     return self;
@@ -61,28 +64,28 @@ class Vector {
   set(valueUpdates){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.update(self.filterCondition, valueUpdates))
+      self.db.update(clone(self.filterCondition), valueUpdates))
     return self;
   }
 
   count(){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.count(self.filterCondition))
+      self.db.count(clone(self.filterCondition)))
     return self;
   }
 
   delete(){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.delete(self.filterCondition))
+      self.db.delete(clone(self.filterCondition)))
     return self;
   }
 
   loadAll(){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.loadAll(self.filterCondition))
+      self.db.loadAll(clone(self.filterCondition)))
     return self;
   }
 
