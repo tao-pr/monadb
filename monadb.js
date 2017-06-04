@@ -1,16 +1,9 @@
 /**
- * Monadbjs
- * Functional database interface for JS
+ * MonaDB JS
+ * Functional interface for database operations
  * @author TaoPR (github.com/starcolon)
  */
 
-var colors  = require('colors');
-var _       = require('underscore');
-var Promise = require('bluebird');
-var DB      = require('db');
-
-class MonaDB {
-  constructor(){}
+module.exports = {
+  'MongoDB':  require('./interface/db-mongo');
 }
-
-module.exports = MonaDB;
