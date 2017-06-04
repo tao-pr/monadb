@@ -4,6 +4,22 @@
  * @author TaoPR (github.com/starcolon)
  */
 
-module.exports = {
-  'MongoDB':  require('./interface/db-mongo');
+var mongoDB = require('./interface/db-mongo');
+var V$      = require('./interface/vector');
+
+class MonaDB extends V$ {
+  constructor(dbtype, svr, dbname, collection){
+    var map = {
+      'mongo': mongoDB
+    }
+    if (dbtype in map){
+      var db = new map[dbtype](svr, dbname, collection);
+      super(db);
+    }
+    else {
+      throw new TypeError(`${dbtype} is not a valid database type.`);
+    }
+  }
 }
+
+module.exports = MonaDB;
