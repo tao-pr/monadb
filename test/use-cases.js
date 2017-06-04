@@ -115,7 +115,6 @@ describe('Database Operations', function(){
     V$.with(_db)
       .delete()
       .onFailure((e) => {
-        console.log('aaaaaa'.yellow); // TAODEBUG:
         expect(e).not.toBeNull;
         done();
       })
