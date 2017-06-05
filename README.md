@@ -16,10 +16,10 @@ db.insert({name: 'Javi', title: 'MD' })
   .insert({name: 'Craig', title: 'N/A'})
   .set({}, {'$set': {'hometown': 'Wellington'}})
   .loadAll()
-  .pluck((ns) => doSomething(ns))
+  .do((ns) => doSomething(ns))
   .insert({name: 'Kevin', 'title': 'Architect', 'hometown': 'Sydney'})
   .count({'hometown': 'Wellington'})
-  .pluck((n) => console.log(n, ' people live in Wellington'))
+  .do((n) => console.log(n, ' people live in Wellington'))
   .deleteAll()
 ```
 
