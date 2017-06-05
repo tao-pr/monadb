@@ -38,11 +38,11 @@ describe('Database Operations', function(){
   it('should query for an existing record', function(done){
     V$.with(_db)
       .count({b: [250]})
-      .pluck((n) => {
+      .do((n) => {
         expect(n).toEqual(1);
       })
       .loadAll()
-      .pluck((recs) => {
+      .do((recs) => {
         expect(recs.length).toEqual(1);
         expect(recs[0].a).toEqual(100);
         expect(recs[0].b).toEqual([250]);
@@ -60,15 +60,15 @@ describe('Database Operations', function(){
     ];
     V$.with(_db)
       .insertMany(records)
-      .pluck((ids) => {
+      .do((ids) => {
         expect(ids.length).toEqual(records.length);
       })
       .countAll()
-      .pluck((n) => {
+      .do((n) => {
         expect(n).toEqual(records.length+1);
       })
       .count({a: {'$gte': 400}})
-      .pluck((n) => {
+      .do((n) => {
         expect(n).toEqual(2);
         done();
       })
@@ -91,11 +91,11 @@ describe('Database Operations', function(){
     V$.with(_db)
       .set({a: 300}, {'$set': {b: [1,2,3]}})
       .count({b: [1,2,3]})
-      .pluck((c) => {
+      .do((c) => {
         expect(c).toEqual(3);
       })
       .count({b: []})
-      .pluck((c) => {
+      .do((c) => {
         expect(c).toEqual(0);
         done();
       });
@@ -105,7 +105,7 @@ describe('Database Operations', function(){
     V$.with(_db)
       .delete({a: {'$lte': 300}})
       .countAll()
-      .pluck((c) => {
+      .do((c) => {
         expect(c).toEqual(2);
         done();
       })
@@ -119,6 +119,8 @@ describe('Database Operations', function(){
         done();
       })
   })
+
+  it('should execute a function conditionally')
 
   afterAll(function(){
     console.log('All done');

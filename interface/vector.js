@@ -108,7 +108,7 @@ class Vector {
     return self;
   }
 
-  load(){
+  load(cond){
     var self = this;
     self.operation = self.operation.then(() => 
       self.db.load(cond))
@@ -149,7 +149,7 @@ class Vector {
    * Take the recent output of the operation
    * to an external [[Function]]
    */
-  pluck(f){
+  do(f){
     var self = this;
     self.operation = self.operation.then((any) => f(any));
     return self;
@@ -159,19 +159,6 @@ class Vector {
     var self = this;
     self.operation = self.operation.catch((e) => f(e));
     return self;
-  }
-
-  /**
-   * Execute a function [f] if 
-   * the [filterF] which takes the value of the 
-   * recent output returns truthy value
-   */
-  if(filterF, f){
-    var self = this;
-    self.operation = self.operation.then((v) => {
-      if (filterF(v)) f(v);
-      return v;
-    })
   }
 }
 
