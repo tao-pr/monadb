@@ -142,7 +142,8 @@ class Vector {
    */
   then(promise){
     var self = this;
-    return Promise.resolve(self.operation).then(promise);
+    Promise.resolve(self.operation).then(promise);
+    return self;
   }
 
   /**

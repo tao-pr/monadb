@@ -30,7 +30,6 @@ class MongoDB extends DB {
     var self = this;
     return new Promise((done, reject) => {
       var cursor = self.db.find(cond || {});
-      // TAOTODO: Wait ?
       cursor.each((err,n) => {
         if (err) return reject(err);
         else if (n) f(n);

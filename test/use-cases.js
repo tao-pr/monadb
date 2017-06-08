@@ -120,7 +120,27 @@ describe('Database Operations', function(){
       })
   })
 
-  it('should execute a function conditionally')
+  it('should pass through another promise via [then]', function(done){
+    var records = [
+      {t: 1, i: [1,2,3]},
+      {t: 1, i: [3,4,5]},
+      {t: 1, i: [6,5,4]},
+      {t: 1, i: [1,2,3]},
+      {t: 1, i: [2,3,3]}
+    ];
+    var vec = [];
+    V$.with(_db)
+      .insertMany(records)
+      .do(() => vec.push(1))
+      .then(V$.with(_db)
+              .loadAll({t: 1})
+              .do((ns) => vec.push(2))
+              .forEach({t: 1}, () => vec.push(3))
+              .do(() => {
+                expect(vec).toEqual([1,2,3,3,3,3,3]);
+                done();
+              }))
+  })
 
   afterAll(function(){
     console.log('All done');
