@@ -66,6 +66,14 @@ db.forEach({foo: {'$gt': 0}}, (rec) => {
 })
 ```
 
+Map records and wrap into a new `Promise`
+
+```javascript
+db.insertMany(myRecords)
+  .map({}, (n) => n.name)
+  .then((ns) => ns.forEach((n) => console.log(n))) // New promise
+```
+
 Handle internal error
 
 ```javascript
