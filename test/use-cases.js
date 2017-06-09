@@ -87,6 +87,20 @@ describe('Database Operations', function(){
       .then(() => done())
   })
 
+  it('should map the results and create another Promise of them', function(done){
+    var take_b = function(n){ return n.b }
+    V$.with(_db)
+      .map({a: {'$in': [200,300,400,500]}}, take_b)
+      .then((ns) => {
+        var expectedArray = [[1,2,3],[],[1,2,3],{foo: 'bar'}];
+        var expectedNS = expectedArray.map((n) => n.toString());
+        var actualNS = ns.map((n) => n.toString());
+        
+        expect(actualNS.sort().join(',')).toEqual(expectedNS.sort().join(','));
+        done();
+      })
+  })
+
   it('should update a record', function(done){
     V$.with(_db)
       .set({a: 300}, {'$set': {b: [1,2,3]}})
@@ -102,11 +116,22 @@ describe('Database Operations', function(){
   })
 
   it('should delete a record based on condition', function(done){
+    var records = [
+      {v:1, foo: 'aaa'},
+      {v:1, foo: 'aab'},
+      {v:1, foo: 'aac'},
+      {v:1, foo: 'aad'}
+    ];
     V$.with(_db)
-      .delete({a: {'$lte': 300}})
-      .countAll()
+      .count({v: 1})
+      .do((n) => expect(n).toEqual(0)) // Should not exist before adding
+      .insertMany(records)
+      .count({v: 1}) 
+      .do((n) => expect(n).toEqual(records.length)) // Should exist after adding
+      .delete({v: 1})
+      .count({v: 1})
       .do((c) => {
-        expect(c).toEqual(2);
+        expect(c).toEqual(0); // Should not exist after deletion
         done();
       })
   })

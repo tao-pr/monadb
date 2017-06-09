@@ -25,7 +25,7 @@ db.insert({name: 'Javi', title: 'MD' })
 
 ## Usage scenarios
 
-Query the records
+Load the records given the query condition
 
 ```javascript
 db.load({id: 150001000})
@@ -69,7 +69,7 @@ db.forEach({foo: {'$gt': 0}}, (rec) => {
 Handle internal error
 
 ```javascript
-db.update({}, {'$set': {a: 100, b: 200}})
+db.update({}, {'$set': {a: 100, b: 200}}) // Operation which may break
   .onFailure((e) => {
     console.error(`Exception raised ${e}`);
   })
