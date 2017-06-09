@@ -137,6 +137,20 @@ class Vector {
   }
 
   /**
+   * Conditionally take some records 
+   * and map then with a given function.
+   * The function potentially returns a new Promise of the results.
+   */
+  map(cond, mapper){
+    var self = this;
+    return new Promise((done,reject) => 
+      self.load(cond).do((ns) => {
+        done(ns.map(mapper));
+      }).onFailure((e) => reject(e))
+    )
+  }
+
+  /**
    * Take the recent output of the operation
    * to an external [[Promise]]
    */
