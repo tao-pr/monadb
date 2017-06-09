@@ -4,12 +4,22 @@ Fully functional database interface for JS.
 
 ---
 
+## Installation
+
+Via npm:
+
+```
+$ npm install monadbjs
+```
+
+---
+
 ## Interface
 
 Running sequential database operations more like a fluent interface sequence.
 
 ```javascript
-var M  = require('./monadb');
+var M  = require('monadbjs');
 var db = new M('mongo', 'localhost', 'db1', 'collection1');
 
 db.insert({name: 'Javi', title: 'MD' })
