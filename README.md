@@ -7,6 +7,10 @@ Fully functional database interface for JS.
 
 ---
 
+Find full documentation here at [MANUAL.md on Github](https://github.com/starcolon/monadb/blob/master/MANUAL.md)
+
+---
+
 ## Installation
 
 Via npm:
