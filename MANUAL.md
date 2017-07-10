@@ -117,3 +117,23 @@ db.insertMany([row1, row2])
 
 ---
 
+### Chain `em up!
+
+Write a sequential operation like a boss. No more callback doom or Promise doom.
+
+```javascript
+db.countAll()
+  .do((n) => console.log(`We have ${n} records`))
+  .delete({foo: 500})
+  .countAll()
+  .do((n) => console.log(`Now we have ${n} records after deleting foo=500`))
+  .insertMany([
+    {foo: 100, bar: 'neptune'},
+    {foo: 250, bar: 'plutoid'},
+    {foo: 350, bar: 'jupiter'}
+  ])
+  .do((ids) => ids.forEach((id) => console.log(`New id added : ${id}`)))
+  .set({foo: 100}, {'$set': {bar: '__'}})
+  .map({}, (n) => n.bar)
+  .then(anotherPromise)
+```
