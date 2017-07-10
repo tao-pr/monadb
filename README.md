@@ -1,5 +1,8 @@
 # MonadbJS
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7391808872d841d6ae927df05a22daf3)](https://www.codacy.com/app/tao/monadb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=starcolon/monadb&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/starcolon/monadb.svg?branch=master)](https://travis-ci.org/starcolon/monadb)
+
 Fully functional database interface for JS.
 
 ---
