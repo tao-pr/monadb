@@ -60,6 +60,7 @@ class MongoDB extends DB {
   update(cond, updater){
     var self = this;
     return new Promise((done, reject) => {
+      // TAOTODO: Multiple records option?
       var options = {raw: true, upsert: true}
       self.db.update(cond, updater, options, (err,res) => {
         if (err){

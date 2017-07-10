@@ -1,4 +1,4 @@
-# MONADBJS
+# MonadbJS
 
 Fully functional database interface for JS.
 
@@ -53,7 +53,8 @@ var records = [
 ];
 db.insertMany(records)
   .countAll()
-  .then(anotherPromise);
+  .do((num) => console.log(num))
+  .then(anotherPromise); // Trigger next promise as long as we finish
 ```
 
 Update / Delete 
@@ -72,7 +73,7 @@ Iterate through records
 ```javascript
 db.forEach({foo: {'$gt': 0}}, (rec) => {
   console.log(rec);
-  doSomething(f);
+  doSomething(rec);
 })
 ```
 
