@@ -1,6 +1,14 @@
-# MONADBJS
+# MonadbJS
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7391808872d841d6ae927df05a22daf3)](https://www.codacy.com/app/tao/monadb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=starcolon/monadb&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/starcolon/monadb.svg?branch=master)](https://travis-ci.org/starcolon/monadb)
+[![npm version](https://badge.fury.io/js/monadbjs.svg)](https://badge.fury.io/js/monadbjs)
 
 Fully functional database interface for JS.
+
+---
+
+Find full documentation here at [MANUAL.md on Github](https://github.com/starcolon/monadb/blob/master/MANUAL.md)
 
 ---
 
@@ -53,7 +61,8 @@ var records = [
 ];
 db.insertMany(records)
   .countAll()
-  .then(anotherPromise);
+  .do((num) => console.log(num))
+  .then(anotherPromise); // Trigger next promise as long as we finish
 ```
 
 Update / Delete 
@@ -72,7 +81,7 @@ Iterate through records
 ```javascript
 db.forEach({foo: {'$gt': 0}}, (rec) => {
   console.log(rec);
-  doSomething(f);
+  doSomething(rec);
 })
 ```
 
