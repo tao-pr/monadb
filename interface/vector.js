@@ -175,6 +175,10 @@ class Vector {
     self.operation = self.operation.catch((e) => f(e));
     return self;
   }
+
+  asPromise(){
+    return this.operation;
+  }
 }
 
 module.exports = Vector;

@@ -167,6 +167,20 @@ describe('Database Operations', function(){
               }))
   })
 
+  it('Chain multiple vectors', function(done){
+    var vec1 = V$.with(_db).insertMany([{a: 7, b: 0.5}, {a:7, b: -0.5}]).asPromise();
+    var vec2 = V$.with(_db).insertMany([{a: 8, b: 0.5}, {a:8, b: -0.1}]).asPromise();
+    var vec3 = V$.with(_db).load({'$or': [{a: 7}, {a: 8}]})
+    
+    Promise
+      .all([vec1, vec2])
+      .then(() => vec3.asPromise())
+      .then((output) => {
+        let nn = output.map((n) => [n.a, n.b])
+        expect(nn).toEqual([[7,0.5], [7,-0.5], [8,0.5], [8,-0.1]])
+      })
+  })
+
   afterAll(function(){
     console.log('All done');
     V$.with(_db)
