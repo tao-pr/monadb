@@ -1,6 +1,6 @@
 {
   "name": "monadbjs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Functional database interface for JS",
   "main": "entry.js",
   "directories": {
