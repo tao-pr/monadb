@@ -93,7 +93,9 @@ class Vector {
       self.operation = self.operation.then(() => 
         self.db.delete(cond))
     else{
-      console.error('[ERROR] Unable to delete records without given condition'.red);
+      if (self.db.verbose){
+        console.error('[ERROR] Unable to delete records without given condition'.red);
+      }
       self.operation = self.operation.then(() => {
         throw new VectorError('Delete operation requires a condition.')
       })
