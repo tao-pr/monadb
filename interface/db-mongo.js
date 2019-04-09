@@ -3,7 +3,7 @@
  * @author TaoPR (github.com/starcolon)
  */
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 var colors  = require('colors');
 var mongo   = require('mongoskin');
 var DB      = require('./db');
