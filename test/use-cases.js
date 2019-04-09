@@ -138,7 +138,7 @@ describe('Database Operations', function(){
 
   it('should handle exception', function(done){
     V.with(_db)
-      .delete()
+      .delete() // This should cause an error
       .onFailure((e) => {
         expect(e).not.toBeNull;
         done();
@@ -179,10 +179,11 @@ describe('Database Operations', function(){
         let nn = output.map((n) => [n.a, n.b])
         expect(nn).toEqual([[7,0.5], [7,-0.5], [8,0.5], [8,-0.1]])
       })
+      .then(() => done())
   })
 
-  afterAll(function(){
-    console.log('All done');
+  afterAll(function(done){
+    console.log('All done, tearing down');
     V.with(_db)
       .deleteAll()
       .then(() => done())
