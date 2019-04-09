@@ -9,9 +9,15 @@ var mongo   = require('mongoskin');
 var DB      = require('./db');
 
 class MongoDB extends DB {
-  constructor(svr, dbname, collection, verbose){
+  constructor(options){
+    let svr = options.svr;
+    let dbname = options.dbname;
+    let collection = options.collection;
+    let verbose = options.verbose || false;
+
     super(svr, dbname, collection, verbose);
-    var connUrl = `mongodb://localhost/${dbname}`
+
+    let connUrl = `mongodb://localhost/${dbname}`
     console.log(`Connecting to ${connUrl}`.green);
     this.db = mongo.db(connUrl).collection(collection);
   }
@@ -27,7 +33,8 @@ class MongoDB extends DB {
   }
 
   getById(id){
-    ???
+    return Promise.reject("Not implemented")
+    // TAOTODO:
   }
 
   iterate(cond, f){
@@ -80,7 +87,8 @@ class MongoDB extends DB {
   }
 
   updateById(id, replacement){
-    ???
+    return Promise.reject("Not implemented")
+    // TAOTODO:
   }
 
   count(cond){ 
@@ -114,7 +122,8 @@ class MongoDB extends DB {
   }
 
   deleteById(id){
-    ???
+    return Promise.reject("Not implemented")
+    // TAOTODO:
   }
 }
 

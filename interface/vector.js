@@ -73,6 +73,20 @@ class Vector {
     return self;
   }
 
+  updateById(id,replacement){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.updateById(id,replacement))
+    return self;
+  }
+
+  findById(id){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.findById(id))
+    return self;
+  }
+
   countAll(){
     var self = this;
     self.operation = self.operation.then(() => 
@@ -95,6 +109,22 @@ class Vector {
     else{
       if (self.db.verbose){
         console.error('[ERROR] Unable to delete records without given condition'.red);
+      }
+      self.operation = self.operation.then(() => {
+        throw new VectorError('Delete operation requires a condition.')
+      })
+    }
+    return self;
+  }
+
+  deleteById(id){
+    var self = this;
+    if (id)
+      self.operation = self.operation.then(() => 
+        self.db.deleteById(id))
+    else{
+      if (self.db.verbose){
+        console.error('[ERROR] Unable to delete records without given id'.red);
       }
       self.operation = self.operation.then(() => {
         throw new VectorError('Delete operation requires a condition.')
