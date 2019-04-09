@@ -167,6 +167,16 @@ describe('Database Operations', function(){
       })
   })
 
+  it('should delete a record based on id', function(done){
+    V.with(_db)
+      .count({_id: id})
+      .do((n) => expect(n).toEqual(1))
+      .deleteById(id)
+      .count({_id: id})
+      .do((n) => expect(n).toEqual(0))
+      .do(() => done())
+  })
+
   it('should handle exception', function(done){
     V.with(_db)
       .delete() // This should cause an error
