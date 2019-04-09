@@ -12,6 +12,7 @@ var _db     = new MongoDB('localhost', 'test_monad', 'one', false);
 describe('Database Operations', function(){
   
   var vector = null;
+  var id = null;
 
   beforeAll(function(done){
     console.log('Initialising')
@@ -47,6 +48,17 @@ describe('Database Operations', function(){
         expect(recs[0].a).toEqual(100);
         expect(recs[0].b).toEqual([250]);
         expect(recs[0]._id).not.toEqual(undefined);
+        id = recs[0]._id;
+        done();
+      })
+  })
+
+  it('should find the record by id', function(done){
+    V.with(_db)
+      .findById(id)
+      .then((n) => {
+        expect(n.a).toEqual(100)
+        expect(n.b).toEqual([250])
         done();
       })
   })
@@ -113,6 +125,25 @@ describe('Database Operations', function(){
         expect(c).toEqual(0);
         done();
       });
+  })
+
+  it('should update a record by id', function(done){
+    var rec = null;
+    V.with(_db)
+      .findById(id)
+      .do((n) => {
+        rec = n;
+        rec.a = rec.a;
+        rec.z = "{u: 150}"
+      })
+      .updateById(id, rec)
+      .findById(id)
+      .then((n) => {
+        expect(n.a).toEqual(rec.a)
+        expect(n.b).toEqual(rec.b)
+        expect(n.z).toEqual(rec.z)
+        done()
+      })
   })
 
   it('should delete a record based on condition', function(done){

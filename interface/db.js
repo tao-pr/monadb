@@ -33,8 +33,18 @@ class DBInterface {
     return Promise.resolve(this);
   }
 
+  getById(id){
+    console.warn('[getById] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
   update(cond, updater){
     console.warn('[update] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  updateById(id, updater){
+    console.warn('[updateById] is not implemented'.yellow);
     return Promise.resolve(this);
   }
 
@@ -50,6 +60,11 @@ class DBInterface {
 
   delete(cond){
     console.warn('[delete] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  deleteById(id){
+    console.warn('[deleteById] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 
