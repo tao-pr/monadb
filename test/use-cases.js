@@ -3,11 +3,11 @@
  * @author TaoPR (github.com/starcolon)
  */
 
-var jasmine   = require('jasmine');
-var MongoDB   = require('../interface/db-mongo');
-var V        = require('../interface/vector');
+var jasmine = require('jasmine');
+var MongoDB = require('../interface/db-mongo');
+var V       = require('../interface/vector');
 
-var _db       = new MongoDB('localhost', 'test_monad', 'one');
+var _db     = new MongoDB('localhost', 'test_monad', 'one', false);
 
 describe('Database Operations', function(){
   
@@ -140,6 +140,7 @@ describe('Database Operations', function(){
     V.with(_db)
       .delete() // This should cause an error
       .onFailure((e) => {
+        console.log("This will cause an error, which is fine.")
         expect(e).not.toBeNull;
         done();
       })

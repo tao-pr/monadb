@@ -47,7 +47,7 @@ class MongoDB extends DB {
     return new Promise((done, reject) => {
       self.db.insert(rec, {raw: true}, (err,res) => {
         if (err) {
-          if (verbose) console.error(`[ERROR] inserting to ${self.collection}`.red);
+          if (self.verbose) console.error(`[ERROR] inserting to ${self.collection}`.red);
           return reject(err);
         }
         else {
@@ -64,7 +64,7 @@ class MongoDB extends DB {
       var options = {raw: true, upsert: true}
       self.db.update(cond, updater, options, (err,res) => {
         if (err){
-          if (verbose) console.error(`[ERROR] updating to ${self.collection}`.red);
+          if (self.verbose) console.error(`[ERROR] updating to ${self.collection}`.red);
           return reject(err);
         }
         else {
@@ -80,7 +80,7 @@ class MongoDB extends DB {
     return new Promise((done, reject) => {
       self.db.count(cond, (err,n) => {
         if (err){
-          if (verbose) console.error(`[ERROR] counting number of records in ${self.collection}`.red);
+          if (self.verbose) console.error(`[ERROR] counting number of records in ${self.collection}`.red);
           return reject(err);
         }
         else {
@@ -95,7 +95,7 @@ class MongoDB extends DB {
     return new Promise((done, reject) => {
       self.db.remove(cond, (err,res) => {
         if (err){
-          if (verbose) console.error(`[ERROR] deleting records from ${self.collection}`.red);
+          if (self.verbose) console.error(`[ERROR] deleting records from ${self.collection}`.red);
           return reject(err);
         }
         else {
