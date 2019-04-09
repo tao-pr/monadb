@@ -26,6 +26,10 @@ class MongoDB extends DB {
     })
   }
 
+  getById(id){
+    ???
+  }
+
   iterate(cond, f){
     var self = this;
     return new Promise((done, reject) => {
@@ -75,6 +79,10 @@ class MongoDB extends DB {
     })
   }
 
+  updateById(id, replacement){
+    ???
+  }
+
   count(cond){ 
     var self = this;
     return new Promise((done, reject) => {
@@ -103,6 +111,10 @@ class MongoDB extends DB {
         }
       })
     })
+  }
+
+  deleteById(id){
+    ???
   }
 }
 
