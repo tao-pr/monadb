@@ -22,22 +22,37 @@ class MongoDB extends DB {
     this.db = mongo.db(connUrl).collection(collection);
   }
 
-  load(cond){
+  load(cond, sort){
     var self = this;
     return new Promise((done, reject) => {
-      self.db.find(cond || {}).toArray(function(err,ns){
+      var loader = self.db.find(cond || {});
+      if (sort){
+        loader = loader.sort(sort)
+      }
+      loader.toArray(function(err,ns){
         if (err) reject(err);
         else done(ns);
       })
     })
   }
 
-  getById(id){
-    return Promise.reject("Not implemented")
-    // TAOTODO:
+  findById(id){
+    var self = this;
+    return new Promise((done, reject) => {
+      self.db
+        .find({_id: new mongo.ObjectId(id)})
+        .toArray((err, ns) => {
+          if (err){
+            return reject({fn: 'getById', error: err})
+          }
+          else {
+            return done(ns[0])
+          }
+        })
+    })
   }
 
-  iterate(cond, f){
+  iterate(cond, f, sort){
     var self = this;
     return new Promise((done, reject) => {
       var cursor = self.db.find(cond || {});

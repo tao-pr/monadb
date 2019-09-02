@@ -59,6 +59,7 @@ describe('Database Operations', function(){
   })
 
   it('should find the record by id', function(done){
+    console.log(`Reading id : ${id}`)
     V.with(_db)
       .findById(id)
       .then((n) => {
