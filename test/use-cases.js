@@ -121,7 +121,7 @@ describe('Database Operations', function(){
 
   it('should update a record', function(done){
     V.with(_db)
-      .set({a: 300}, {'$set': {b: [1,2,3]}})
+      .set({a: 300}, {b: [1,2,3]})
       .count({b: [1,2,3]})
       .do((c) => {
         expect(c).toEqual(3);
@@ -131,25 +131,6 @@ describe('Database Operations', function(){
         expect(c).toEqual(0);
         done();
       });
-  })
-
-  it('should update a record by id', function(done){
-    var rec = null;
-    V.with(_db)
-      .findById(id)
-      .do((n) => {
-        rec = n;
-        rec.a = rec.a;
-        rec.z = "{u: 150}"
-      })
-      .updateById(id, rec)
-      .findById(id)
-      .then((n) => {
-        expect(n.a).toEqual(rec.a)
-        expect(n.b).toEqual(rec.b)
-        expect(n.z).toEqual(rec.z)
-        done()
-      })
   })
 
   it('should delete a record based on condition', function(done){
@@ -171,16 +152,6 @@ describe('Database Operations', function(){
         expect(c).toEqual(0); // Should not exist after deletion
         done();
       })
-  })
-
-  it('should delete a record based on id', function(done){
-    V.with(_db)
-      .count({_id: id})
-      .do((n) => expect(n).toEqual(1))
-      .deleteById(id)
-      .count({_id: id})
-      .do((n) => expect(n).toEqual(0))
-      .do(() => done())
   })
 
   it('should handle exception', function(done){
@@ -210,7 +181,7 @@ describe('Database Operations', function(){
               .do((ns) => vec.push(2))
               .forEach({t: 1}, () => vec.push(3))
               .do(() => {
-                expect(vec).toEqual([1,2,3,3,3,3,3]);
+                expect(vec).toEqual([2,1,3,3,3,3,3]);
                 done();
               }))
   })
