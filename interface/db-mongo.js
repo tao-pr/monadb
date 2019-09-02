@@ -83,13 +83,15 @@ class MongoDB extends DB {
     })
   }
 
-  update(cond, updater){
+  update(cond, updates){
     var self = this;
     return new Promise((done, reject) => {
       // TAOTODO: Multiple records option?
-      var options = {raw: true, upsert: true}
-      self.db.update(cond, updater, options, (err,res) => {
+      var options = {raw: true, upsert: false}
+      self.db.update(cond, {'$set': updates}, options, (err,res) => {
         if (err){
+          console.log(err); // TAODEBUG:
+          console.log(updates)
           if (self.verbose) console.error(`[ERROR] updating to ${self.collection}`.red);
           return reject(err);
         }
@@ -99,11 +101,6 @@ class MongoDB extends DB {
         }
       })
     })
-  }
-
-  updateById(id, replacement){
-    return Promise.reject("Not implemented")
-    // TAOTODO:
   }
 
   count(cond){ 
@@ -136,10 +133,6 @@ class MongoDB extends DB {
     })
   }
 
-  deleteById(id){
-    return Promise.reject("Not implemented")
-    // TAOTODO:
-  }
 }
 
 Object.assign(MongoDB, DB);
