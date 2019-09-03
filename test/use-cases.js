@@ -199,7 +199,6 @@ describe('Database Operations', function(){
         expect(nn).toContain([7,-0.5])
         expect(nn).toContain([8, 0.5])
         expect(nn).toContain([8,-0.1])
-        //expect(nn).toEqual([[7,0.5], [7,-0.5], [8,0.5], [8,-0.1]])
       })
       .then(() => done())
   })
