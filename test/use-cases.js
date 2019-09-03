@@ -175,13 +175,12 @@ describe('Database Operations', function(){
     var vec = [];
     V.with(_db)
       .insertMany(records)
-      .do(() => vec.push(1))
       .then(V.with(_db)
               .loadAll({t: 1})
               .do((ns) => vec.push(2))
               .forEach({t: 1}, () => vec.push(3))
               .do(() => {
-                expect(vec).toEqual([2,1,3,3,3,3,3]);
+                expect(vec).toEqual([2,3,3,3,3,3]);
                 done();
               }))
   })
@@ -196,7 +195,39 @@ describe('Database Operations', function(){
       .then(() => vec3.asPromise())
       .then((output) => {
         let nn = output.map((n) => [n.a, n.b])
-        expect(nn).toEqual([[7,0.5], [7,-0.5], [8,0.5], [8,-0.1]])
+        expect(nn).toContain([7, 0.5])
+        expect(nn).toContain([7,-0.5])
+        expect(nn).toContain([8, 0.5])
+        expect(nn).toContain([8,-0.1])
+        //expect(nn).toEqual([[7,0.5], [7,-0.5], [8,0.5], [8,-0.1]])
+      })
+      .then(() => done())
+  })
+
+  it('Query and sort', function(done){
+    V.with(_db)
+      .insertMany([
+        {a: 155, i: 0, v: 25, w: 1},
+        {a: 155, i: 5, v: 0,  w: -3},
+        {a: 155, i: 10,v: 5,  w: 1},
+        {a: 155, i: 15,v: 5,  w: 0},
+        {a: 155, i: 20,v: 2,  w: 10},
+        {a: 155, i: 25,v: 2,  w: 5},
+        {a: 255, i: 25,v: 2,  w: 5}
+      ])
+      .load({a:155}, {'v': 1, 'w': -1})
+      .do((ns) => {
+        ns = ns.map((n) => {
+          return {a: n.a, i: n.i, v: n.v, w: n.w}
+        })
+        expect(ns).toEqual([
+          {a: 155, i: 5, v: 0,  w: -3},
+          {a: 155, i: 20,v: 2,  w: 10},
+          {a: 155, i: 25,v: 2,  w: 5},
+          {a: 155, i: 10,v: 5,  w: 1},
+          {a: 155, i: 15,v: 5,  w: 0},
+          {a: 155, i: 0, v: 25, w: 1}
+        ])
       })
       .then(() => done())
   })

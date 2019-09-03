@@ -117,10 +117,10 @@ class Vector {
     return self;
   }
 
-  load(cond){
+  load(cond,sort){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.load(cond))
+      self.db.load(cond,sort))
     return self;
   }
 
