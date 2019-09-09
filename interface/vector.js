@@ -6,7 +6,7 @@
 var assert  = require('assert');
 var DB      = require('./db');
 var colors  = require('colors');
-var Promise = require('bluebird');
+var Promise = require('promise');
 
 var clone   = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -73,6 +73,13 @@ class Vector {
     return self;
   }
 
+  findById(id){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.findById(id))
+    return self;
+  }
+
   countAll(){
     var self = this;
     self.operation = self.operation.then(() => 
@@ -93,7 +100,9 @@ class Vector {
       self.operation = self.operation.then(() => 
         self.db.delete(cond))
     else{
-      console.error('[ERROR] Unable to delete records without given condition'.red);
+      if (self.db.verbose){
+        console.error('[ERROR] Unable to delete records without given condition'.red);
+      }
       self.operation = self.operation.then(() => {
         throw new VectorError('Delete operation requires a condition.')
       })
@@ -108,10 +117,10 @@ class Vector {
     return self;
   }
 
-  load(cond){
+  load(cond,sort){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.load(cond))
+      self.db.load(cond,sort))
     return self;
   }
 

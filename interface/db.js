@@ -3,7 +3,7 @@
  * @author TaoPR (github.com/starcolon)
  */
 
-var Promise = require('bluebird');
+var Promise = require('promise');
 var colors  = require('colors');
 
 /**
@@ -20,7 +20,7 @@ class DBInterface {
   /**
    * Exhaustive version of querying
    */
-  load(cond){
+  load(cond, sort){
     console.warn('[find] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
@@ -28,13 +28,23 @@ class DBInterface {
   /**
    * Iterative version of querying
    */
-  iterate(cond, f){
+  iterate(cond, f, sort){
     console.warn('[iterate] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  getById(id){
+    console.warn('[getById] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 
   update(cond, updater){
     console.warn('[update] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  updateById(id, updater){
+    console.warn('[updateById] is not implemented'.yellow);
     return Promise.resolve(this);
   }
 
@@ -50,6 +60,11 @@ class DBInterface {
 
   delete(cond){
     console.warn('[delete] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  deleteById(id){
+    console.warn('[deleteById] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 
