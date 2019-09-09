@@ -3,20 +3,26 @@
  * @author TaoPR (github.com/starcolon)
  */
 
-var jasmine   = require('jasmine');
-var MongoDB   = require('../interface/db-mongo');
-var V$        = require('../interface/vector');
+var jasmine = require('jasmine');
+var MongoDB = require('../interface/db-mongo');
+var V       = require('../interface/vector');
 
-var _db       = new MongoDB('localhost', 'test_monad', 'one');
+var _db     = new MongoDB({
+  svr:        'localhost', 
+  dbname:     'test_monad', 
+  collection: 'one', 
+  verbose:    false
+});
 
 describe('Database Operations', function(){
   
   var vector = null;
+  var id = null;
 
   beforeAll(function(done){
     console.log('Initialising')
     // Ensure the test database is clean and empty
-    vector = V$.with(_db).deleteAll();
+    vector = V.with(_db).deleteAll();
     vector.then(() => done());
   })
 
@@ -26,7 +32,7 @@ describe('Database Operations', function(){
   })
 
   it('should add a new record', function(done){
-    V$.with(_db)
+    V.with(_db)
       .insert({a: 100, b: [250]})
       .countAll()
       .then((c) => {
@@ -36,7 +42,7 @@ describe('Database Operations', function(){
   })
 
   it('should query for an existing record', function(done){
-    V$.with(_db)
+    V.with(_db)
       .count({b: [250]})
       .do((n) => {
         expect(n).toEqual(1);
@@ -47,6 +53,18 @@ describe('Database Operations', function(){
         expect(recs[0].a).toEqual(100);
         expect(recs[0].b).toEqual([250]);
         expect(recs[0]._id).not.toEqual(undefined);
+        id = recs[0]._id;
+        done();
+      })
+  })
+
+  it('should find the record by id', function(done){
+    console.log(`Reading id : ${id}`)
+    V.with(_db)
+      .findById(id)
+      .then((n) => {
+        expect(n.a).toEqual(100)
+        expect(n.b).toEqual([250])
         done();
       })
   })
@@ -58,7 +76,7 @@ describe('Database Operations', function(){
       {a: 400, b:[1,2,3]},
       {a: 500, b:{foo: 'bar'}}
     ];
-    V$.with(_db)
+    V.with(_db)
       .insertMany(records)
       .do((ids) => {
         expect(ids.length).toEqual(records.length);
@@ -75,7 +93,7 @@ describe('Database Operations', function(){
   })
 
   it('should iteratively traverse records', function(done){
-    V$.with(_db)
+    V.with(_db)
       .forEach({b:[1,2,3]}, (r) => {
         // Even though MongoDB iteration ends will null,
         // the interface has to prevent from transmitting it.
@@ -89,7 +107,7 @@ describe('Database Operations', function(){
 
   it('should map the results and create another Promise of them', function(done){
     var take_b = function(n){ return n.b }
-    V$.with(_db)
+    V.with(_db)
       .map({a: {'$in': [200,300,400,500]}}, take_b)
       .then((ns) => {
         var expectedArray = [[1,2,3],[],[1,2,3],{foo: 'bar'}];
@@ -102,8 +120,8 @@ describe('Database Operations', function(){
   })
 
   it('should update a record', function(done){
-    V$.with(_db)
-      .set({a: 300}, {'$set': {b: [1,2,3]}})
+    V.with(_db)
+      .set({a: 300}, {b: [1,2,3]})
       .count({b: [1,2,3]})
       .do((c) => {
         expect(c).toEqual(3);
@@ -122,7 +140,7 @@ describe('Database Operations', function(){
       {v:1, foo: 'aac'},
       {v:1, foo: 'aad'}
     ];
-    V$.with(_db)
+    V.with(_db)
       .count({v: 1})
       .do((n) => expect(n).toEqual(0)) // Should not exist before adding
       .insertMany(records)
@@ -137,9 +155,10 @@ describe('Database Operations', function(){
   })
 
   it('should handle exception', function(done){
-    V$.with(_db)
-      .delete()
+    V.with(_db)
+      .delete() // This should cause an error
       .onFailure((e) => {
+        console.log("This will cause an error, which is fine.")
         expect(e).not.toBeNull;
         done();
       })
@@ -154,36 +173,67 @@ describe('Database Operations', function(){
       {t: 1, i: [2,3,3]}
     ];
     var vec = [];
-    V$.with(_db)
+    V.with(_db)
       .insertMany(records)
-      .do(() => vec.push(1))
-      .then(V$.with(_db)
+      .then(V.with(_db)
               .loadAll({t: 1})
               .do((ns) => vec.push(2))
               .forEach({t: 1}, () => vec.push(3))
               .do(() => {
-                expect(vec).toEqual([1,2,3,3,3,3,3]);
+                expect(vec).toEqual([2,3,3,3,3,3]);
                 done();
               }))
   })
 
   it('Chain multiple vectors', function(done){
-    var vec1 = V$.with(_db).insertMany([{a: 7, b: 0.5}, {a:7, b: -0.5}]).asPromise();
-    var vec2 = V$.with(_db).insertMany([{a: 8, b: 0.5}, {a:8, b: -0.1}]).asPromise();
-    var vec3 = V$.with(_db).load({'$or': [{a: 7}, {a: 8}]})
+    var vec1 = V.with(_db).insertMany([{a: 7, b: 0.5}, {a:7, b: -0.5}]).asPromise();
+    var vec2 = V.with(_db).insertMany([{a: 8, b: 0.5}, {a:8, b: -0.1}]).asPromise();
+    var vec3 = V.with(_db).load({'$or': [{a: 7}, {a: 8}]})
     
     Promise
       .all([vec1, vec2])
       .then(() => vec3.asPromise())
       .then((output) => {
         let nn = output.map((n) => [n.a, n.b])
-        expect(nn).toEqual([[7,0.5], [7,-0.5], [8,0.5], [8,-0.1]])
+        expect(nn).toContain([7, 0.5])
+        expect(nn).toContain([7,-0.5])
+        expect(nn).toContain([8, 0.5])
+        expect(nn).toContain([8,-0.1])
       })
+      .then(() => done())
   })
 
-  afterAll(function(){
-    console.log('All done');
-    V$.with(_db)
+  it('Query and sort', function(done){
+    V.with(_db)
+      .insertMany([
+        {a: 155, i: 0, v: 25, w: 1},
+        {a: 155, i: 5, v: 0,  w: -3},
+        {a: 155, i: 10,v: 5,  w: 1},
+        {a: 155, i: 15,v: 5,  w: 0},
+        {a: 155, i: 20,v: 2,  w: 10},
+        {a: 155, i: 25,v: 2,  w: 5},
+        {a: 255, i: 25,v: 2,  w: 5}
+      ])
+      .load({a:155}, {'v': 1, 'w': -1})
+      .do((ns) => {
+        ns = ns.map((n) => {
+          return {a: n.a, i: n.i, v: n.v, w: n.w}
+        })
+        expect(ns).toEqual([
+          {a: 155, i: 5, v: 0,  w: -3},
+          {a: 155, i: 20,v: 2,  w: 10},
+          {a: 155, i: 25,v: 2,  w: 5},
+          {a: 155, i: 10,v: 5,  w: 1},
+          {a: 155, i: 15,v: 5,  w: 0},
+          {a: 155, i: 0, v: 25, w: 1}
+        ])
+      })
+      .then(() => done())
+  })
+
+  afterAll(function(done){
+    console.log('All done, tearing down');
+    V.with(_db)
       .deleteAll()
       .then(() => done())
   })
