@@ -13,7 +13,11 @@ class MonaDB extends V$ {
       'mongo': mongoDB
     }
     if (dbtype in map){
-      var db = new map[dbtype](svr, dbname, collection);
+      var db = new map[dbtype]({
+        svr: svr, 
+        dbname: dbname, 
+        collection: collection
+      });
       super(db);
     }
     else {
