@@ -124,10 +124,10 @@ class Vector {
     return self;
   }
 
-  loadAll(){
+  loadAll(sort){
     var self = this;
     self.operation = self.operation.then(() => 
-      self.db.load({}))
+      self.db.load({},sort))
     return self;
   }
 
