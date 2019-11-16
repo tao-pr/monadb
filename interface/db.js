@@ -73,6 +73,11 @@ class DBInterface {
     return Promise.resolve(this);
   }
 
+  agg(keys,by,sort,prefilter){
+    console.warn('[agg] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
 }
 
 
