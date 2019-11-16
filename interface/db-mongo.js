@@ -5,7 +5,7 @@
 
 var Promise = require('promise');
 var colors  = require('colors');
-var mongo   = require('mongoskin');
+var mongo   = require('mongodb');
 var DB      = require('./db');
 
 class MongoDB extends DB {
@@ -17,9 +17,29 @@ class MongoDB extends DB {
 
     super(svr, dbname, collection, verbose);
 
-    let connUrl = `mongodb://localhost/${dbname}`
-    console.log(`Connecting to ${connUrl}`.green);
-    this.db = mongo.db(connUrl).collection(collection);
+    let connUrl = `mongodb://localhost:27017`;
+    this.pool = new mongo.MongoClient(connUrl, {useUnifiedTopology: true});
+  }
+
+  start(){
+    var self = this;
+    return new Promise((done, reject) => {
+      return this.pool.connect((e) => {
+        console.log(`Connecting to : ${connUrl}`);
+        if (e){
+          console.error(`Error connecting to : ${connUrl}`);
+          return Promise.reject(e)
+        }
+        else {
+          console.log(`Connected : ${connUrl}`);
+          self.db = self.pool.db(self.dbname);
+        }
+      })
+    })
+  }
+
+  release(){
+    this.pool.close(); // Terminate the connection
   }
 
   load(cond, sort){

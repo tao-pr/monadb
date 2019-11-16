@@ -7,12 +7,18 @@ var jasmine = require('jasmine');
 var MongoDB = require('../interface/db-mongo');
 var V       = require('../interface/vector');
 
+const TIMEOUT = 1000;
+
 var _db     = new MongoDB({
   svr:        'localhost', 
   dbname:     'test_monad', 
   collection: 'one', 
   verbose:    false
 });
+
+const promiseTimeout = time => () => new Promise(
+  resolve => setTimeout(resolve, time, time)
+);
 
 describe('Database Operations', function(){
   
@@ -22,14 +28,19 @@ describe('Database Operations', function(){
   beforeAll(function(done){
     console.log('Initialising')
     // Ensure the test database is clean and empty
-    vector = V.with(_db).deleteAll();
-    vector.then(() => done());
+    vector = V.with(_db).deleteAll().
+    vector.then(() => done()).catch((e) => {
+      console.error('ERROR:')
+      console.error(e);
+    });
   })
 
   it('should initialise a new database vector', function(done){
     expect(vector.constructor.name).toEqual('Vector');
+    console.log(vector); // TAODEBUG
+    console.log(vector.constructor.name)
     done();
-  })
+  }, TIMEOUT)
 
   it('should add a new record', function(done){
     V.with(_db)
@@ -39,7 +50,7 @@ describe('Database Operations', function(){
         expect(c).toEqual(1);
         done();
       })
-  })
+  }, TIMEOUT)
 
   it('should query for an existing record', function(done){
     V.with(_db)
@@ -56,7 +67,7 @@ describe('Database Operations', function(){
         id = recs[0]._id;
         done();
       })
-  })
+  }, TIMEOUT)
 
   it('should find the record by id', function(done){
     console.log(`Reading id : ${id}`)
@@ -67,7 +78,7 @@ describe('Database Operations', function(){
         expect(n.b).toEqual([250])
         done();
       })
-  })
+  }, TIMEOUT)
 
   it('should add a bulk of records', function(done){
     var records = [
@@ -90,7 +101,7 @@ describe('Database Operations', function(){
         expect(n).toEqual(2);
         done();
       })
-  })
+  }, TIMEOUT)
 
   it('should iteratively traverse records', function(done){
     V.with(_db)
@@ -103,7 +114,7 @@ describe('Database Operations', function(){
         expect(r.a != 200 && r.a != 400).toBeFalsy();
       })
       .then(() => done())
-  })
+  }, TIMEOUT)
 
   it('should map the results and create another Promise of them', function(done){
     var take_b = function(n){ return n.b }
@@ -117,7 +128,7 @@ describe('Database Operations', function(){
         expect(actualNS.sort().join(',')).toEqual(expectedNS.sort().join(','));
         done();
       })
-  })
+  }, TIMEOUT)
 
   it('should update a record', function(done){
     V.with(_db)
@@ -131,7 +142,7 @@ describe('Database Operations', function(){
         expect(c).toEqual(0);
         done();
       });
-  })
+  }, TIMEOUT)
 
   it('should delete a record based on condition', function(done){
     var records = [
@@ -152,7 +163,7 @@ describe('Database Operations', function(){
         expect(c).toEqual(0); // Should not exist after deletion
         done();
       })
-  })
+  }, TIMEOUT)
 
   it('should handle exception', function(done){
     V.with(_db)
@@ -162,7 +173,7 @@ describe('Database Operations', function(){
         expect(e).not.toBeNull;
         done();
       })
-  })
+  }, TIMEOUT)
 
   it('should pass through another promise via [then]', function(done){
     var records = [
@@ -183,7 +194,7 @@ describe('Database Operations', function(){
                 expect(vec).toEqual([2,3,3,3,3,3]);
                 done();
               }))
-  })
+  }, TIMEOUT)
 
   it('Chain multiple vectors', function(done){
     var vec1 = V.with(_db).insertMany([{a: 7, b: 0.5}, {a:7, b: -0.5}]).asPromise();
@@ -201,7 +212,7 @@ describe('Database Operations', function(){
         expect(nn).toContain([8,-0.1])
       })
       .then(() => done())
-  })
+  }, TIMEOUT)
 
   it('Query and sort', function(done){
     V.with(_db)
@@ -229,12 +240,35 @@ describe('Database Operations', function(){
         ])
       })
       .then(() => done())
-  })
+  }, TIMEOUT)
+
+  it('Aggregate and sort', function(done){
+    let keys = ['k'];
+    let by = {qty: {'$sum': '$qty'}};
+    let sort = {};
+    let prefilter = {'qty': {'$gt': 0}};
+
+    V.with(_db)
+      .insertMany([
+        {k: 'Water', p: 0.5, qty: 0},
+        {k: 'Water', p: 1.5, qty: 10},
+        {k: 'Water', p: 2.5, qty: 20},
+        {k: 'Pepsi', p: 3.5, qty: 20},
+        {k: 'Beer',  p: 4.0, qty: 1},
+        {k: 'Beer',  p: 4.5, qty: 25}
+      ])
+      .agg(keys, by, sort, prefilter)
+      .do((ns) => {
+        console.log(ns);
+        // TAOTODO:
+      })
+      .then(() => done())
+  }, TIMEOUT)
 
   afterAll(function(done){
     console.log('All done, tearing down');
     V.with(_db)
       .deleteAll()
       .then(() => done())
-  })
+  }, TIMEOUT)
 })
