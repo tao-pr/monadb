@@ -172,14 +172,9 @@ class MongoDB extends DB {
 
       if (sort) ops.push({'$sort':sort})
 
-      self.db.aggregate(ops, (err,res) => {
-        if (err){
-          if (self.verbose) console.error(`[ERROR] deleting records from ${self.collection}`.red);
-          return reject(err);
-        }
-        else {
-          return done(err);
-        }
+      self.db.aggregate(ops).toArray((err, g) => {
+        if (err) reject(err);
+        done(g)
       })
     })
   }
