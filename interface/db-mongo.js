@@ -17,22 +17,21 @@ class MongoDB extends DB {
 
     super(svr, dbname, collection, verbose);
 
-    let connUrl = `mongodb://localhost:27017`;
-    this.pool = new mongo.MongoClient(connUrl, {useUnifiedTopology: true});
+    this.pool = new mongo.MongoClient(`mongodb://localhost:27017/${dbname}`);
   }
 
   start(){
     var self = this;
     return new Promise((done, reject) => {
-      return this.pool.connect((e) => {
-        console.log(`Connecting to : ${connUrl}`);
+      this.pool.connect((e) => {
         if (e){
-          console.error(`Error connecting to : ${connUrl}`);
-          return Promise.reject(e)
+          console.error('Error connecting to MongoDB');
+          return reject(e)
         }
         else {
-          console.log(`Connected : ${connUrl}`);
-          self.db = self.pool.db(self.dbname);
+          console.log('MongoDB connected'.green);
+          self.db = self.pool.db().collection(self.collection);
+          return done(self)
         }
       })
     })
@@ -141,7 +140,7 @@ class MongoDB extends DB {
   delete(cond){
     var self = this;
     return new Promise((done, reject) => {
-      self.db.remove(cond, (err,res) => {
+      self.db.deleteMany(cond, (err,res) => {
         if (err){
           if (self.verbose) console.error(`[ERROR] deleting records from ${self.collection}`.red);
           return reject(err);
