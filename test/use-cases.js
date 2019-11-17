@@ -250,8 +250,8 @@ describe('Database Operations', function(){
 
   it('Aggregate and sort', function(done){
     let keys = ['k'];
-    let by = {qty: {'$sum': '$qty'}};
-    let sort = {};
+    let by = {qty: {'$sum': '$qty'}, maxp: {'$max': '$p'}};
+    let sort = {'p': -1};
     let prefilter = {'qty': {'$gt': 0}};
 
     V.with(_db)
@@ -265,10 +265,15 @@ describe('Database Operations', function(){
       ])
       .agg(keys, by, sort, prefilter)
       .do((ns) => {
-        console.log(ns);
-        // TAOTODO:
+        var exp = [
+          { _id: { k: 'Beer' }, qty: 26, maxp: 4.5 },
+          { _id: { k: 'Pepsi' }, qty: 20, maxp: 3.5 },
+          { _id: { k: 'Water' }, qty: 30, maxp: 2.5 }
+        ];
+        
+        done()
       })
-      .then(() => done())
+      .onFailure((e) => console.error(e))
   }, TIMEOUT)
 
   afterAll(function(done){
