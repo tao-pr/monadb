@@ -28,9 +28,9 @@ class Vector {
       supportedPrototypes.indexOf(db.constructor.name)>=0, 
       true, 
       '[Cursor] needs to be initialised with a [DBInterface].');
-    this.db = db.start();
+    this.db = db;
     this.filterCondition = {};
-    this.operation = Promise.resolve(db);
+    this.operation = Promise.resolve(db.start());
   }
 
   /**

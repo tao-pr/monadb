@@ -7,7 +7,7 @@ var jasmine = require('jasmine');
 var MongoDB = require('../interface/db-mongo');
 var V       = require('../interface/vector');
 
-const TIMEOUT = 1000;
+const TIMEOUT = 400;
 
 var _db     = new MongoDB({
   svr:        'localhost', 
@@ -22,29 +22,22 @@ const promiseTimeout = time => () => new Promise(
 
 describe('Database Operations', function(){
   
-  var vector = null;
-  var id = null;
+  global.vector = null;
+  global.id = null;
 
-  beforeAll(function(done){
+  beforeEach(function(done){
     console.log('Initialising')
     // Ensure the test database is clean and empty
-    vector = V.with(_db).deleteAll().
-    vector.then(() => done()).catch((e) => {
-      console.error('ERROR:')
-      console.error(e);
-    });
+    V.with(_db).deleteAll().then(() => done())
   })
-
-  it('should initialise a new database vector', function(done){
-    expect(vector.constructor.name).toEqual('Vector');
-    console.log(vector); // TAODEBUG
-    console.log(vector.constructor.name)
-    done();
-  }, TIMEOUT)
 
   it('should add a new record', function(done){
     V.with(_db)
       .insert({a: 100, b: [250]})
+      .onFailure((e) => {
+        console.error('ERROR insertion'); // TAODEBUG:
+        console.error(e);
+      })
       .countAll()
       .then((c) => {
         expect(c).toEqual(1);
@@ -54,6 +47,7 @@ describe('Database Operations', function(){
 
   it('should query for an existing record', function(done){
     V.with(_db)
+      .insert({a: 100, b: [250]})
       .count({b: [250]})
       .do((n) => {
         expect(n).toEqual(1);
@@ -65,17 +59,6 @@ describe('Database Operations', function(){
         expect(recs[0].b).toEqual([250]);
         expect(recs[0]._id).not.toEqual(undefined);
         id = recs[0]._id;
-        done();
-      })
-  }, TIMEOUT)
-
-  it('should find the record by id', function(done){
-    console.log(`Reading id : ${id}`)
-    V.with(_db)
-      .findById(id)
-      .then((n) => {
-        expect(n.a).toEqual(100)
-        expect(n.b).toEqual([250])
         done();
       })
   }, TIMEOUT)
@@ -94,7 +77,7 @@ describe('Database Operations', function(){
       })
       .countAll()
       .do((n) => {
-        expect(n).toEqual(records.length+1);
+        expect(n).toEqual(records.length);
       })
       .count({a: {'$gte': 400}})
       .do((n) => {
@@ -104,7 +87,14 @@ describe('Database Operations', function(){
   }, TIMEOUT)
 
   it('should iteratively traverse records', function(done){
+    var records = [
+      {a: 200, b:[1,2,3]},
+      {a: 300, b:[]},
+      {a: 400, b:[1,2,3]},
+      {a: 500, b:{foo: 'bar'}}
+    ];
     V.with(_db)
+      .insertMany(records)
       .forEach({b:[1,2,3]}, (r) => {
         // Even though MongoDB iteration ends will null,
         // the interface has to prevent from transmitting it.
@@ -118,7 +108,16 @@ describe('Database Operations', function(){
 
   it('should map the results and create another Promise of them', function(done){
     var take_b = function(n){ return n.b }
+
+    var records = [
+      {a: 200, b:[1,2,3]},
+      {a: 300, b:[]},
+      {a: 400, b:[1,2,3]},
+      {a: 500, b:{foo: 'bar'}}
+    ];
+
     V.with(_db)
+      .insertMany(records)
       .map({a: {'$in': [200,300,400,500]}}, take_b)
       .then((ns) => {
         var expectedArray = [[1,2,3],[],[1,2,3],{foo: 'bar'}];
@@ -131,7 +130,15 @@ describe('Database Operations', function(){
   }, TIMEOUT)
 
   it('should update a record', function(done){
+    var records = [
+      {a: 200, b:[1,2,3]},
+      {a: 300, b:[]},
+      {a: 400, b:[1,2,3]},
+      {a: 500, b:{foo: 'bar'}}
+    ];
+
     V.with(_db)
+      .insertMany(records)
       .set({a: 300}, {b: [1,2,3]})
       .count({b: [1,2,3]})
       .do((c) => {
@@ -149,18 +156,21 @@ describe('Database Operations', function(){
       {v:1, foo: 'aaa'},
       {v:1, foo: 'aab'},
       {v:1, foo: 'aac'},
-      {v:1, foo: 'aad'}
+      {v:1, foo: 'aad'},
+      {v:2, foo: 'aaa'}
     ];
     V.with(_db)
-      .count({v: 1})
-      .do((n) => expect(n).toEqual(0)) // Should not exist before adding
       .insertMany(records)
       .count({v: 1}) 
-      .do((n) => expect(n).toEqual(records.length)) // Should exist after adding
+      .do((n) => expect(n).toEqual(records.length-1)) // Should exist after adding
       .delete({v: 1})
       .count({v: 1})
       .do((c) => {
-        expect(c).toEqual(0); // Should not exist after deletion
+        expect(c).toEqual(0);
+      })
+      .count({v: 2})
+      .do((c) => {
+        expect(c).toEqual(1);
         done();
       })
   }, TIMEOUT)
@@ -188,12 +198,8 @@ describe('Database Operations', function(){
       .insertMany(records)
       .then(V.with(_db)
               .loadAll({t: 1})
-              .do((ns) => vec.push(2))
-              .forEach({t: 1}, () => vec.push(3))
-              .do(() => {
-                expect(vec).toEqual([2,3,3,3,3,3]);
-                done();
-              }))
+              .do((ns) => expect(ns.length).toEqual(records.length))
+              .do(() => {done()}))
   }, TIMEOUT)
 
   it('Chain multiple vectors', function(done){
