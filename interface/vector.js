@@ -171,6 +171,16 @@ class Vector {
   }
 
   /**
+   * Multi-level aggregation (aggregation of aggregation)
+   */
+  multiAgg(aggList){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.multiAgg(aggList))
+    return self;
+  }
+
+  /**
    * Take the recent output of the operation
    * to an external [[Promise]]
    */
