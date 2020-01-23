@@ -179,6 +179,36 @@ class MongoDB extends DB {
     })
   }
 
+  multiAgg(aggs){
+    var self = this;
+    return new Promise((done, reject) => {
+      // keys = ['key1', 'key2']
+      // by   = {count: {$sum: 1}}
+      // sort = {val1: -1, val2: 1}
+      
+      // Construct the operation chain for Mongo aggregation
+      let ops = [];
+      aggs.forEach((agg) => {
+        var [keys, by, sort, prefilter] = agg
+        if (prefilter) ops.push({'$match': prefilter});
+
+        let group = {'_id': Object.fromEntries(keys.map(k => [k, '$'+k]))};
+        Object.entries(by).forEach(kv => {
+          let [col,how] = kv;
+          group[col] = how
+        })
+        ops.push({'$group': group});
+
+        if (sort) ops.push({'$sort':sort})  
+      })
+      
+      self.db.aggregate(ops).toArray((err, g) => {
+        if (err) reject(err);
+        done(g)
+      })
+    })
+  }
+
 }
 
 Object.assign(MongoDB, DB);

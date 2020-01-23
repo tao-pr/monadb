@@ -95,6 +95,17 @@ db.update({g: 100}, {'$set': {g: 150}})
   .countAll()
 ```
 
+Aggregation
+
+```javascript
+let keys = ['team','player']
+let by = {goals: {'$sum': 1}}
+let sort = {'goals': -1}
+let prefilter = {'team': {'$ne': '$against'}}
+db.agg(keys, by, sort, prefilter)
+  .do((res) => console.log(res))
+```
+
 Iterate through records
 
 ```javascript
