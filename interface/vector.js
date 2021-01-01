@@ -6,7 +6,6 @@
 var assert  = require('assert');
 var DB      = require('./db');
 var colors  = require('colors');
-var Promise = require('promise');
 
 var clone   = (obj) => JSON.parse(JSON.stringify(obj));
 
