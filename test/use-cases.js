@@ -7,7 +7,7 @@ var jasmine = require('jasmine');
 var MongoDB = require('../interface/db-mongo');
 var V       = require('../interface/vector');
 
-var _db     = new MongoDB({
+var _db = new MongoDB({
   svr:        'localhost', 
   dbname:     'test_monad', 
   collection: 'one', 
