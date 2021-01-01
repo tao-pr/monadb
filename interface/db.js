@@ -3,7 +3,6 @@
  * @author TaoPR (github.com/starcolon)
  */
 
-var Promise = require('promise');
 var colors  = require('colors');
 
 /**
