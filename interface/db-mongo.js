@@ -87,17 +87,16 @@ class MongoDB extends DB {
   update(cond, updates){
     var self = this;
     return new Promise((done, reject) => {
-      // TAOTODO: Multiple records option?
       var options = {raw: true, upsert: false}
       self.db.update(cond, {'$set': updates}, options, (err,res) => {
         if (err){
-          console.log(err); // TAODEBUG:
-          console.log(updates)
-          if (self.verbose) console.error(`[ERROR] updating to ${self.collection}`.red);
+          if (self.verbose){
+            console.error(err);
+            console.error(`[ERROR] updating to ${self.collection}`.red);
+          }
           return reject(err);
         }
         else {
-          // TAOTODO: This should <bind> some useful value
           return done();
         }
       })
