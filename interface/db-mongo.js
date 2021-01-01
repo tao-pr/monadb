@@ -1,6 +1,6 @@
 /**
  * MongoDB interface
- * @author TaoPR (github.com/starcolon)
+ * @author TaoPR (github.com/tao-pr)
  */
 
 var Promise = require('promise');
@@ -18,7 +18,8 @@ class MongoDB extends DB {
     super(svr, dbname, collection, verbose);
 
     let connUrl = `mongodb://localhost/${dbname}`
-    console.log(`Connecting to ${connUrl}`.green);
+    if (verbose)
+      console.log(`Connecting to ${connUrl}`.green);
     this.db = mongo.db(connUrl).collection(collection);
   }
 
