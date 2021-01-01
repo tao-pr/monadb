@@ -4,7 +4,7 @@
  */
 
 var colors  = require('colors');
-var mongo   = require('mongoskin');
+var mongo   = require('mongodb');
 var DB      = require('./db');
 
 class MongoDB extends DB {
@@ -16,10 +16,30 @@ class MongoDB extends DB {
 
     super(svr, dbname, collection, verbose);
 
-    let connUrl = `mongodb://localhost/${dbname}`
-    if (verbose)
-      console.log(`Connecting to ${connUrl}`.green);
-    this.db = mongo.db(connUrl).collection(collection);
+    this.pool = new mongo.MongoClient();
+  }
+
+  start(){
+    var self = this;
+    let dbname = this.dbname;
+    return new Promise((done, reject) => {
+      this.pool.connect(`mongodb://localhost:27017/${dbname}`, {}, (e,db) => {
+        if (e){
+          console.error('Error connecting to MongoDB');
+          return reject(e)
+        }
+        else {
+          if (self.verbose)
+            console.log('MongoDB connected'.green);
+          self.db = db.collection(self.collection);
+          return done(self)
+        }
+      })
+    })
+  }
+
+  release(){
+    this.pool.close(); // Terminate the connection
   }
 
   load(cond, sort){
@@ -120,7 +140,7 @@ class MongoDB extends DB {
   delete(cond){
     var self = this;
     return new Promise((done, reject) => {
-      self.db.remove(cond, (err,res) => {
+      self.db.deleteMany(cond, (err,res) => {
         if (err){
           if (self.verbose) console.error(`[ERROR] deleting records from ${self.collection}`.red);
           return reject(err);
@@ -128,6 +148,63 @@ class MongoDB extends DB {
         else {
           return done();
         }
+      })
+    })
+  }
+
+  agg(keys,by,sort,prefilter){
+    var self = this;
+    return new Promise((done, reject) => {
+      // keys = ['key1', 'key2']
+      // by   = {count: {$sum: 1}}
+      // sort = {val1: -1, val2: 1}
+      
+      // Construct the operation chain for Mongo aggregation
+      let ops = [];
+      if (prefilter) ops.push({'$match': prefilter});
+
+      let group = {'_id': Object.fromEntries(keys.map(k => [k, '$'+k]))};
+      Object.entries(by).forEach(kv => {
+        let [col,how] = kv;
+        group[col] = how
+      })
+      ops.push({'$group': group});
+
+      if (sort) ops.push({'$sort':sort})
+
+      self.db.aggregate(ops).toArray((err, g) => {
+        if (err) reject(err);
+        done(g)
+      })
+    })
+  }
+
+  multiAgg(aggs){
+    var self = this;
+    return new Promise((done, reject) => {
+      // keys = ['key1', 'key2']
+      // by   = {count: {$sum: 1}}
+      // sort = {val1: -1, val2: 1}
+      
+      // Construct the operation chain for Mongo aggregation
+      let ops = [];
+      aggs.forEach((agg) => {
+        var [keys, by, sort, prefilter] = agg
+        if (prefilter) ops.push({'$match': prefilter});
+
+        let group = {'_id': Object.fromEntries(keys.map(k => [k, '$'+k]))};
+        Object.entries(by).forEach(kv => {
+          let [col,how] = kv;
+          group[col] = how
+        })
+        ops.push({'$group': group});
+
+        if (sort) ops.push({'$sort':sort})  
+      })
+      
+      self.db.aggregate(ops).toArray((err, g) => {
+        if (err) reject(err);
+        done(g)
       })
     })
   }

@@ -29,7 +29,7 @@ class Vector {
       '[Cursor] needs to be initialised with a [DBInterface].');
     this.db = db;
     this.filterCondition = {};
-    this.operation = Promise.resolve(db);
+    this.operation = Promise.resolve(db.start());
   }
 
   /**
@@ -60,8 +60,8 @@ class Vector {
   insertMany(records){
     var self = this;
     self.operation = self.operation
-      .then(() => Promise.all(records.map(r => self.db.insert(r))))
-      .then((ns) => ns.map((n) => n.insertedIds[0]))
+      .then(() => self.db.insert(records, {w: 1}))
+      .then((res) => res.insertedIds)
     return self;
   }
 
@@ -156,6 +156,26 @@ class Vector {
         done(ns.map(mapper));
       }).onFailure((e) => reject(e))
     )
+  }
+
+  /**
+   * Aggregate
+   */
+  agg(keys,by,sort,prefilter){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.agg(keys,by,sort,prefilter))
+    return self;
+  }
+
+  /**
+   * Multi-level aggregation (aggregation of aggregation)
+   */
+  multiAgg(aggList){
+    var self = this;
+    self.operation = self.operation.then(() => 
+      self.db.multiAgg(aggList))
+    return self;
   }
 
   /**

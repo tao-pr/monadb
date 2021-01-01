@@ -28,7 +28,7 @@ Running sequential database operations more like a fluent interface sequence.
 
 ```javascript
 var M  = require('monadbjs');
-var db = new M('mongo', 'localhost', 'db1', 'collection1');
+var db = new M('mongo', 'localhost', 'db1', 'collection1').start();
 
 db.insert({name: 'Javi', title: 'MD' })
   .insert({name: 'Craig', title: 'N/A'})
@@ -39,6 +39,25 @@ db.insert({name: 'Javi', title: 'MD' })
   .count({'hometown': 'Wellington'})
   .do((n) => console.log(n, ' people live in Wellington'))
   .deleteAll()
+```
+
+## Release the connection after use
+
+```javascript
+db.release()
+```
+
+## Spawn multiple connections
+
+Each time you call `.start()`, the interface creates a new connection.
+
+```javascript
+var db = new M('mongo', 'localhost', 'db1', 'collection1')
+let conn1 = db.connect();
+let conn2 = db.connect();
+
+// And close all connections with
+db.release();
 ```
 
 ## Usage scenarios
@@ -74,6 +93,17 @@ db.update({g: 100}, {'$set': {g: 150}})
   .delete({g: null})
   .delete({g: 500})
   .countAll()
+```
+
+Aggregation
+
+```javascript
+let keys = ['team','player']
+let by = {goals: {'$sum': 1}}
+let sort = {'goals': -1}
+let prefilter = {'team': {'$ne': '$against'}}
+db.agg(keys, by, sort, prefilter)
+  .do((res) => console.log(res))
 ```
 
 Iterate through records
