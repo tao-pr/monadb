@@ -52,16 +52,16 @@ class Vector {
   insert(record){
     var self = this;
     self.operation = self.operation
-      .then(() => self.db.insert(record))
-      .then((res) => res.insertedIds[0])
+      .then(() => self.db.insert([record]))
+      .then((res) => Object.values(res.insertedIds)[0])
     return self;
   }
 
   insertMany(records){
     var self = this;
     self.operation = self.operation
-      .then(() => self.db.insert(records, {w: 1}))
-      .then((res) => res.insertedIds)
+      .then(() => self.db.insert(records))
+      .then((res) => Object.values(res.insertedIds))
     return self;
   }
 
