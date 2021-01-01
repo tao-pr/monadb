@@ -17,6 +17,22 @@ class DBInterface {
   }
 
   /**
+   * Start a new connection
+   */
+  start(){
+    console.warn('[start] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  /**
+   * Release the connection
+   */
+  release(){
+    console.warn('[release] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  /**
    * Exhaustive version of querying
    */
   load(cond, sort){
@@ -69,6 +85,11 @@ class DBInterface {
 
   drop(){
     console.warn('[drop] is not implemented.'.yellow);
+    return Promise.resolve(this);
+  }
+
+  agg(keys,by,sort,prefilter){
+    console.warn('[agg] is not implemented.'.yellow);
     return Promise.resolve(this);
   }
 
