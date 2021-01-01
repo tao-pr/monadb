@@ -1,9 +1,8 @@
 /**
  * MongoDB interface
- * @author TaoPR (github.com/starcolon)
+ * @author TaoPR (github.com/tao-pr)
  */
 
-var Promise = require('promise');
 var colors  = require('colors');
 var mongo   = require('mongodb');
 var DB      = require('./db');
@@ -17,20 +16,22 @@ class MongoDB extends DB {
 
     super(svr, dbname, collection, verbose);
 
-    this.pool = new mongo.MongoClient(`mongodb://localhost:27017/${dbname}`);
+    this.pool = new mongo.MongoClient();
   }
 
   start(){
     var self = this;
+    let dbname = this.dbname;
     return new Promise((done, reject) => {
-      this.pool.connect((e) => {
+      this.pool.connect(`mongodb://localhost:27017/${dbname}`, {}, (e,db) => {
         if (e){
           console.error('Error connecting to MongoDB');
           return reject(e)
         }
         else {
-          console.log('MongoDB connected'.green);
-          self.db = self.pool.db().collection(self.collection);
+          if (self.verbose)
+            console.log('MongoDB connected'.green);
+          self.db = db.collection(self.collection);
           return done(self)
         }
       })
@@ -105,17 +106,16 @@ class MongoDB extends DB {
   update(cond, updates){
     var self = this;
     return new Promise((done, reject) => {
-      // TAOTODO: Multiple records option?
       var options = {raw: true, upsert: false}
       self.db.update(cond, {'$set': updates}, options, (err,res) => {
         if (err){
-          console.log(err); // TAODEBUG:
-          console.log(updates)
-          if (self.verbose) console.error(`[ERROR] updating to ${self.collection}`.red);
+          if (self.verbose){
+            console.error(err);
+            console.error(`[ERROR] updating to ${self.collection}`.red);
+          }
           return reject(err);
         }
         else {
-          // TAOTODO: This should <bind> some useful value
           return done();
         }
       })

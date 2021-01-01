@@ -6,7 +6,6 @@
 var assert  = require('assert');
 var DB      = require('./db');
 var colors  = require('colors');
-var Promise = require('promise');
 
 var clone   = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -61,9 +60,8 @@ class Vector {
   insertMany(records){
     var self = this;
     self.operation = self.operation
-      // TAOTODO Call native 'insertMany'
-      .then(() => Promise.all(records.map(r => self.db.insert(r))))
-      .then((ns) => ns.map((n) => n.insertedIds[0]))
+      .then(() => self.db.insert(records, {w: 1}))
+      .then((res) => res.insertedIds)
     return self;
   }
 
