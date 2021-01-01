@@ -4,7 +4,7 @@
  */
 
 var colors  = require('colors');
-var mongo   = require('mongodb');
+var MongoClient   = require('mongodb').MongoClient;
 var DB      = require('./db');
 
 class MongoDB extends DB {
@@ -15,15 +15,14 @@ class MongoDB extends DB {
     let verbose = options.verbose || false;
 
     super(svr, dbname, collection, verbose);
-
-    this.pool = new mongo.MongoClient();
   }
 
   start(){
     var self = this;
     let dbname = this.dbname;
+    this.client = null;
     return new Promise((done, reject) => {
-      this.pool.connect(`mongodb://localhost:27017/${dbname}`, {}, (e,db) => {
+      MongoClient.connect('mongodb://localhost:27017/', (e,client) => {
         if (e){
           console.error('Error connecting to MongoDB');
           return reject(e)
@@ -31,7 +30,8 @@ class MongoDB extends DB {
         else {
           if (self.verbose)
             console.log('MongoDB connected'.green);
-          self.db = db.collection(self.collection);
+          self.client = client;
+          self.db = self.client.db(dbname).collection(self.collection);
           return done(self)
         }
       })
@@ -39,7 +39,9 @@ class MongoDB extends DB {
   }
 
   release(){
-    this.pool.close(); // Terminate the connection
+    if (this.client){
+      this.client.close(); // Terminate the connection
+    }
   }
 
   load(cond, sort){
