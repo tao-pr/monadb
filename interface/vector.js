@@ -61,7 +61,9 @@ class Vector {
     var self = this;
     self.operation = self.operation
       .then(() => self.db.insert(records))
-      .then((res) => Object.values(res.insertedIds))
+      .then((res) => {
+        return Object.values(res.insertedIds)
+      })
     return self;
   }
 
