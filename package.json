@@ -1,6 +1,6 @@
 {
   "name": "monadbjs",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Functional database interface for JS",
   "main": "entry.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/starcolon/monadb.git"
+    "url": "https://github.com/tao-pr/monadb.git"
   },
   "keywords": [
     "js",
