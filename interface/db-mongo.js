@@ -93,7 +93,7 @@ class MongoDB extends DB {
   insert(rec){
     var self = this;
     return new Promise((done, reject) => {
-      self.db.insert(rec, {raw: true}, (err,res) => {
+      self.db.insertMany(rec, {raw: true}, (err,res) => {
         if (err) {
           if (self.verbose) console.error(`[ERROR] inserting to ${self.collection}`.red);
           return reject(err);
