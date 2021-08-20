@@ -109,7 +109,7 @@ class MongoDB extends DB {
     var self = this;
     return new Promise((done, reject) => {
       var options = {raw: true, upsert: false}
-      self.db.update(cond, {'$set': updates}, options, (err,res) => {
+      self.db.updateMany(cond, {'$set': updates}, options, (err,res) => {
         if (err){
           if (self.verbose){
             console.error(err);
