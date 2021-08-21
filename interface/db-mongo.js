@@ -77,15 +77,20 @@ class MongoDB extends DB {
   iterate(cond, f, sort){
     var self = this;
     return new Promise((done, reject) => {
-      var cursor = self.db.find(cond || {});
-      cursor.each((err,n) => {
-        if (err) return reject(err);
-        else if (n) f(n);
-        else {
-          // End of inputs, [n] will be NULL
-          done()
-        }
-      })
+      const p = self.db.find(cond || {})
+        .forEach((n) => {
+          f(n)
+        })
+
+      p.then(() => done())
+      // cursor.each((err,n) => { // TAOTODO: Fix this
+      //   if (err) return reject(err);
+      //   else if (n) f(n);
+      //   else {
+      //     // End of inputs, [n] will be NULL
+      //     done()
+      //   }
+      // })
     })
     return self;
   }
