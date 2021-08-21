@@ -83,14 +83,6 @@ class MongoDB extends DB {
         })
 
       p.then(() => done())
-      // cursor.each((err,n) => { // TAOTODO: Fix this
-      //   if (err) return reject(err);
-      //   else if (n) f(n);
-      //   else {
-      //     // End of inputs, [n] will be NULL
-      //     done()
-      //   }
-      // })
     })
     return self;
   }
