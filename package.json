@@ -2,7 +2,7 @@
   "name": "monadbjs",
   "version": "0.1.2",
   "description": "Functional database interface for JS",
-  "main": "entry.js",
+  "main": "monadb.js",
   "directories": {
     "test": "test"
   },
