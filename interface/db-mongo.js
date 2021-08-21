@@ -77,15 +77,12 @@ class MongoDB extends DB {
   iterate(cond, f, sort){
     var self = this;
     return new Promise((done, reject) => {
-      var cursor = self.db.find(cond || {});
-      cursor.each((err,n) => {
-        if (err) return reject(err);
-        else if (n) f(n);
-        else {
-          // End of inputs, [n] will be NULL
-          done()
-        }
-      })
+      const p = self.db.find(cond || {})
+        .forEach((n) => {
+          f(n)
+        })
+
+      p.then(() => done())
     })
     return self;
   }
@@ -93,7 +90,7 @@ class MongoDB extends DB {
   insert(rec){
     var self = this;
     return new Promise((done, reject) => {
-      self.db.insert(rec, {raw: true}, (err,res) => {
+      self.db.insertMany(rec, {raw: true}, (err,res) => {
         if (err) {
           if (self.verbose) console.error(`[ERROR] inserting to ${self.collection}`.red);
           return reject(err);
@@ -109,7 +106,7 @@ class MongoDB extends DB {
     var self = this;
     return new Promise((done, reject) => {
       var options = {raw: true, upsert: false}
-      self.db.update(cond, {'$set': updates}, options, (err,res) => {
+      self.db.updateMany(cond, {'$set': updates}, options, (err,res) => {
         if (err){
           if (self.verbose){
             console.error(err);
