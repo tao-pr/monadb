@@ -28,7 +28,7 @@ Running sequential database operations more like a fluent interface sequence.
 
 ```javascript
 var M  = require('monadbjs');
-var db = new M('mongo', 'localhost', 'db1', 'collection1').start();
+var db = new M('mongo', 'localhost', 27017, 'db1', 'collection1').start();
 
 db.insert({name: 'Javi', title: 'MD' })
   .insert({name: 'Craig', title: 'N/A'})
@@ -52,7 +52,7 @@ db.release()
 Each time you call `.start()`, the interface creates a new connection.
 
 ```javascript
-var db = new M('mongo', 'localhost', 'db1', 'collection1')
+var db = new M('mongo', 'localhost', 27017, 'db1', 'collection1')
 let conn1 = db.connect();
 let conn2 = db.connect();
 
