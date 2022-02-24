@@ -12,6 +12,7 @@ class MongoDB extends DB {
     let svr = options.svr;
     let dbname = options.dbname;
     let collection = options.collection;
+    let port = options.port || 27017;
     let verbose = options.verbose || false;
 
     super(svr, dbname, collection, verbose);
@@ -22,7 +23,7 @@ class MongoDB extends DB {
     let dbname = this.dbname;
     this.client = null;
     return new Promise((done, reject) => {
-      MongoClient.connect('mongodb://localhost:27017/', (e,client) => {
+      MongoClient.connect(`mongodb://${self.svr}:${self.port}/`, (e,client) => {
         if (e){
           console.error('Error connecting to MongoDB');
           return reject(e)
