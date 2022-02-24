@@ -8,7 +8,7 @@ var mongoDB = require('./interface/db-mongo');
 var V$      = require('./interface/vector');
 
 class MonaDB extends V$ {
-  constructor(dbtype, svr, dbname, collection){
+  constructor(dbtype, svr, port, dbname, collection){
     var map = {
       'mongo': mongoDB
     }
@@ -16,6 +16,7 @@ class MonaDB extends V$ {
       var db = new map[dbtype]({
         svr: svr, 
         dbname: dbname, 
+        port: port,
         collection: collection
       });
       super(db);

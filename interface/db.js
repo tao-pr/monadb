@@ -9,9 +9,10 @@ var colors  = require('colors');
  * All of methods of [[DBInterface]] must always return a [[Promise]]
  */
 class DBInterface {
-  constructor(svr, dbname, collection, verbose){
+  constructor(svr, dbname, port, collection, verbose){
     this.svr = svr;
     this.dbname = dbname;
+    this.port = port;
     this.collection = collection;
     this.verbose = verbose || false;
   }
