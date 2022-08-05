@@ -46,10 +46,12 @@ class MongoDB extends DB {
     }
   }
 
-  load(cond, sort){
+  load(cond, sort, limit){
     var self = this;
     return new Promise((done, reject) => {
       var loader = self.db.find(cond || {});
+      if (limit)
+        loader = loader.limit(limit)
       if (sort){
         loader = loader.sort(sort)
       }
