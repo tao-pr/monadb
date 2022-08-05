@@ -220,7 +220,8 @@ describe('Database Operations', function(){
       .then(() => done())
   }, TIMEOUT)
 
-  it('Query and sort', function(done){
+  it('Query and sort with limit', function(done){
+    let limit = 4;
     V.with(_db)
       .insertMany([
         {a: 155, i: 0, v: 25, w: 1},
@@ -231,7 +232,7 @@ describe('Database Operations', function(){
         {a: 155, i: 25,v: 2,  w: 5},
         {a: 255, i: 25,v: 2,  w: 5}
       ])
-      .load({a:155}, {'v': 1, 'w': -1})
+      .load({a:155}, {'v': 1, 'w': -1}, limit)
       .do((ns) => {
         ns = ns.map((n) => {
           return {a: n.a, i: n.i, v: n.v, w: n.w}
@@ -240,9 +241,9 @@ describe('Database Operations', function(){
           {a: 155, i: 5, v: 0,  w: -3},
           {a: 155, i: 20,v: 2,  w: 10},
           {a: 155, i: 25,v: 2,  w: 5},
-          {a: 155, i: 10,v: 5,  w: 1},
-          {a: 155, i: 15,v: 5,  w: 0},
-          {a: 155, i: 0, v: 25, w: 1}
+          {a: 155, i: 10,v: 5,  w: 1}
+          // {a: 155, i: 15,v: 5,  w: 0},
+          // {a: 155, i: 0, v: 25, w: 1}
         ])
       })
       .then(() => done())
