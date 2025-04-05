@@ -1,6 +1,6 @@
 /**
  * Use cases
- * @author TaoPR (github.com/starcolon)
+ * @author TaoPR (github.com/tao-pr)
  */
 
 var jasmine = require('jasmine');
