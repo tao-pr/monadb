@@ -16,7 +16,7 @@ Find full documentation here at [MANUAL.md on Github](https://github.com/starcol
 
 Via npm:
 
-```
+```sh
 $ npm install monadbjs
 ```
 
